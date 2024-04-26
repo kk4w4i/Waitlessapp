@@ -22,31 +22,35 @@ function Signin () {
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
-
+      
         try {
-            const response = await fetch("/api/login/", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-                "X-CSRFToken": cookies.get("csrftoken"),
-              },
-              credentials: "same-origin",
-              body: JSON.stringify({ username: email, password: password }),
-            });
-        
-            if (!response.ok) {
-              throw new Error("Login failed");
-            }
-            const data = await response.json();
-            if (data) {
-                window.location.href = '/'
-            }
-            // Handle successful login, e.g., redirect to a protected page
-          } catch (error) {
-            console.error("Login error:", error);
-            // Handle login error, e.g., display an error message
+          const response = await fetch("/api/login/", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "X-CSRFToken": cookies.get("csrftoken"),
+            },
+            credentials: "same-origin",
+            body: JSON.stringify({ username: email, password: password }),
+          });
+      
+          if (!response.ok) {
+            throw new Error("Login failed");
           }
-    };
+      
+          const data = await response.json();
+          console.log(data);
+          window.location.href = '/menu'
+      
+          // Store the access token in local storage
+          localStorage.setItem("access-token", data.access_token);
+      
+          // Handle successful login, e.g., redirect to a protected page
+        } catch (error) {
+          console.error("Login error:", error);
+          // Handle login error, e.g., display an error message
+        }
+      };
 
   return (
     <div>
