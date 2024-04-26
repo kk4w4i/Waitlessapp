@@ -1,0 +1,83 @@
+#root {
+  padding-top: 1rem;
+  margin: 0 auto;
+}
+
+/* Resize handle styles */
+.react-resizable-handle {
+  position: absolute;
+  width: 7px;
+  height: 7px;
+  background-color: black;
+  border-radius: 50%;
+  border: 1px solid white;
+  box-sizing: border-box;
+}
+
+/* Resize handle positions */
+.react-resizable-handle-sw {
+  bottom: 0;
+  left: 0;
+  cursor: sw-resize;
+  transform: translate(-50%, 50%);
+}
+
+.react-resizable-handle-nw {
+  top: 0;
+  left: 0;
+  cursor: nw-resize;
+  transform: translate(-50%, -50%);
+}
+
+.react-resizable-handle-ne {
+  top: 0;
+  right: 0;
+  cursor: ne-resize;
+  transform: translate(50%, -50%);
+}
+
+.react-resizable-handle-se {
+  bottom: 0;
+  right: 0;
+  cursor: se-resize;
+  transform: translate(50%, 50%);
+}
+
+.react-resizable-handle-e {
+  top: 50%;
+  right: 0;
+  cursor: e-resize;
+  transform: translate(50%, -50%);
+}
+
+.react-resizable-handle-w {
+  top: 50%;
+  left: 0;
+  cursor: w-resize;
+  transform: translate(-50%, -50%);
+}
+
+.react-resizable-handle-n {
+  top: 0;
+  left: 50%;
+  cursor: n-resize;
+  transform: translate(-50%, -50%);
+}
+
+.react-resizable-handle-s {
+  bottom: 0;
+  left: 50%;
+  cursor: s-resize;
+  transform: translate(-50%, 50%);
+}
+
+.player-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* Player ratio: 100 / (1280 / 720) */
+}
+
+.react-player {
+  position: absolute;
+  top: 0;
+  left: 0;
+}
