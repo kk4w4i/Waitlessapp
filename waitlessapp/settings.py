@@ -25,7 +25,7 @@ SECRET_KEY = 'django-insecure-xsgg!l(ze#=@anbv+45a$zifcy8kla&on1n1l34fgtb$n*riw)
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['infs3202-99f65c3e.uqcloud.net']
+ALLOWED_HOSTS = ['infs3202-99f65c3e.uqcloud.net', '127.0.0.1']
 
 
 # Application definition
@@ -125,7 +125,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 CSRF_COOKIE_SAMESITE = 'Strict'
 SESSION_COOKIE_SAMESITE = 'Strict'
-CSRF_COOKIE_HTTPONLY = True
+CSRF_COOKIE_HTTPONLY = False
 SESSION_COOKIE_HTTPONLY = True
 
 STATICFILES_DIRS = (

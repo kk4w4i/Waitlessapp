@@ -31,7 +31,7 @@ function Hero () {
                     <img className='h-[2rem]' src={Logo}></img>
                     <div className='flex gap-2 md:gap-4'>
                         <Button onClick={() => window.location.href = '/signin'} className="text-[0.7rem] md:text-[0.8rem]" variant="outline">Sign in</Button>
-                        <Button onClick={() => window.location.href = '/menu'} className='text-[0.7rem] md:text-[0.8rem] hidden md:block'> Try it out now</Button>
+                        <Button onClick={() => window.location.href = '/demo/menu'} className='text-[0.7rem] md:text-[0.8rem] hidden md:block'> Try it out now</Button>
                     </div>
                 </header>
 
@@ -56,7 +56,7 @@ function Hero () {
                         <p className='text-[0.7rem] md:text-[1rem] text-center w-[85%] md:w-[60%]'>
                             For restaurants and cafes that are looking to streamline their POS system to be faster and more accurate.
                         </p>
-                        <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = '/menu'}>Let's have a look</Button>
+                        <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = '/demo/menu'}>Let's have a look</Button>
                     </div>
                 </div>
 

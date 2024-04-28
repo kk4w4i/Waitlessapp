@@ -27,9 +27,10 @@ urlpatterns = [
     path('', index_view, name='index'),
     path('signin/', index_view, name='index'),
     path('menu/', index_view, name='index'),
-    path('layout/', index_view, name='index'),
-    path('serving/', index_view, name='index'),
-    path('kitchen/', index_view, name='index'),
-    path('order/', index_view, name='index'),
+    path('demo/menu/', index_view, name='index'),
+    path('demo/layout/', index_view, name='index'),
+    path('demo/serving/', index_view, name='index'),
+    path('demo/kitchen/', index_view, name='index'),
+    path('demo/order/', index_view, name='index'),
     path('signup/', index_view, name='index')
 ]

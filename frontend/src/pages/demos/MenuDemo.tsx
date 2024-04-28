@@ -38,7 +38,111 @@ import {
 } from "@radix-ui/react-icons"
  
 const data: Product[] = [
-
+    {
+        id: "a76d9f8b-2f6d-4e3c-b7d8-8e7d9f6e5d1a",
+        price: 12.99,
+        category: "Sushi",
+        status: "Published",
+        name: "California Roll"
+    },
+    {
+        id: "e3c7b6d8-a9f6-4d1e-b2d9-f3e7c9b2d5e6",
+        price: 18.75,
+        category: "Main",
+        status: "Published",
+        name: "Grilled Salmon"
+    },
+    {
+        id: "f7a6d3c2-b9e8-4f1d-a2e3-c5d7e6f8d9b1",
+        price: 6.25,
+        category: "Small Dish",
+        status: "Draft",
+        name: "Edamame"
+    },
+    {
+        id: "c8d7e6f9-b1a2-4e3c-b5d8-a9f6d1e2b3d4",
+        price: 7.50,
+        category: "Dessert",
+        status: "Published",
+        name: "Mochi Ice Cream"
+    },
+    {
+        id: "b9e8f1d2-a3e5-4c7d-b6d8-a9f6d1e2b3d4",
+        price: 22.99,
+        category: "Main",
+        status: "Published",
+        name: "Beef Teriyaki"
+    },
+    {
+        id: "d2a3e5c7-d6b8-4a9f-b1e2-d3c4b5d8e6f9",
+        price: 4.99,
+        category: "Soup",
+        status: "Draft",
+        name: "Miso Soup"
+    },
+    {
+        id: "e5c7d6b8-a9f6-4d1e-b2d9-f3e7c9b2d5e6",
+        price: 9.25,
+        category: "Share",
+        status: "Published",
+        name: "Gyoza"
+    },
+    {
+        id: "b8a9f6d1-e2d9-4f3e-b7c9-b2d5e6f8d9b1",
+        price: 16.50,
+        category: "Main",
+        status: "Published",
+        name: "Chicken Katsu"
+    },
+    {
+        id: "f6d1e2d9-f3e7-4c9b-b2d5-e6f8d9b1a2e3",
+        price: 5.75,
+        category: "Small Dish",
+        status: "Draft",
+        name: "Seaweed Salad"
+    },
+    {
+        id: "d1e2d9f3-e7c9-4b2d-b5e6-f8d9b1a2e3c5",
+        price: 8.99,
+        category: "Dessert",
+        status: "Published",
+        name: "Green Tea Ice Cream"
+    },
+    {
+        id: "e2d9f3e7-c9b2-4d5e-b6f8-d9b1a2e3c5d7",
+        price: 3.25,
+        category: "Soup",
+        status: "Published",
+        name: "Egg Drop Soup"
+    },
+    {
+        id: "d9f3e7c9-b2d5-4e6f-b8d9-b1a2e3c5d7e6",
+        price: 11.75,
+        category: "Share",
+        status: "Draft",
+        name: "Vegetable Tempura"
+    },
+    {
+        id: "f3e7c9b2-d5e6-4f8d-b9b1-a2e3c5d7e6f9",
+        price: 14.25,
+        category: "Main",
+        status: "Published",
+        name: "Vegetable Curry"
+    },
+    {
+        id: "e7c9b2d5-e6f8-4d9b-b1a2-e3c5d7e6f9b1",
+        price: 6.99,
+        category: "Small Dish",
+        status: "Published",
+        name: "Cucumber Sunomono"
+    },
+    {
+        id: "c9b2d5e6-f8d9-4b1a-b2e3-c5d7e6f9b1a2",
+        price: 10.50,
+        category: "Share",
+        status: "Published",
+        name: "Yakitori"
+    }
 ]
 
 export type Product = {
@@ -168,7 +272,7 @@ export const columns: ColumnDef<Product>[] = [
   },
 ]
  
-function Menu() {
+function MenuDemo() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -320,4 +424,4 @@ function Menu() {
   )
 }
 
-export default Menu
+export default MenuDemo
