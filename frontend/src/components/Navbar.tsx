@@ -27,6 +27,8 @@ function Navbar() {
       
     const appPages = appPagesObj[location.pathname as keyof AppPages]; [1][2]
 
+    const urlHead =  token ? "/" : "/demo/"
+
     useEffect(() => {
         const handleScroll = () => {
           const scrollPosition = window.innerHeight + window.scrollY;
@@ -76,88 +78,78 @@ function Navbar() {
                 <img onClick={() => window.location.href = '/'} className="h-[1.8rem]" src={Logo}></img>
                 <div className='absolute left-1/2 -translate-x-1/2 flex flex-row gap-4 md:block hidden'>
                     <Button 
-                        className={`${location.pathname === '/demo/menu/' ? "font-bold" : "font-light"}`} 
+                        className={`${location.pathname === `${urlHead}menu/` ? "font-bold" : "font-light"}`} 
                         variant="ghost"
-                        onClick={() => window.location.href = '/demo/menu'}
+                        onClick={() => window.location.href = `${urlHead}menu/`}
                     >
                         Menu
                     </Button>
                     <Button 
-                        className={`${location.pathname === '/demo/layout/' ? "font-bold" : "font-light"}`} 
+                        className={`${location.pathname === `${urlHead}layout/` ? "font-bold" : "font-light"}`} 
                         variant="ghost"
-                        onClick={() => window.location.href = '/demo/layout'}
+                        onClick={() => window.location.href = `${urlHead}layout/`}
                     >
                         Layout
                     </Button>
                     <Button 
-                        className={`${location.pathname === '/demo/serving/' ? "font-bold" : "font-light"}`} 
+                        className={`${location.pathname === `${urlHead}serving/` ? "font-bold" : "font-light"}`} 
                         variant="ghost"
-                        onClick={() => window.location.href = '/demo/serving'}
+                        onClick={() => window.location.href = `${urlHead}serving/`}
                     >
                         Serve
                     </Button>
                     <Button 
-                        className={`${location.pathname === '/demo/kitchen/' ? "font-bold" : "font-light"}`} 
+                        className={`${location.pathname === `${urlHead}kitchen/` ? "font-bold" : "font-light"}`} 
                         variant="ghost"
-                        onClick={() => window.location.href = '/demo/kitchen'}
+                        onClick={() => window.location.href = `${urlHead}kitchen/`}
                     >
                         Kitchen
                     </Button>
                 </div>
                 <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex flex-row gap-2 md:hidden block bg-white z-[50] p-2 drop-shadow-lg transition-opacity ease-in duration-600 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
                     <Button 
-                        className={`rounded-md ${location.pathname === '/demo/menu/' ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
-                        onClick={() => window.location.href = '/demo/menu'}
+                        className={`rounded-md ${location.pathname === `${urlHead}menu/` ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
+                        onClick={() => window.location.href = `${urlHead}menu/`}
                     >
                         Menu
                     </Button>
                     <Button 
-                        className={`rounded-md ${location.pathname === '/demo/layout/' ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
-                        onClick={() => window.location.href = '/demo/layout'}
+                        className={`rounded-md ${location.pathname === `${urlHead}layout/` ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
+                        onClick={() => window.location.href = `${urlHead}layout/`}
                     >
                         Layout
                     </Button>
                     <Button 
-                        className={`rounded-md ${location.pathname === '/demo/serving/' ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
-                        onClick={() => window.location.href = '/demo/serving'}
+                        className={`rounded-md ${location.pathname === `${urlHead}serving/` ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
+                        onClick={() => window.location.href = `${urlHead}serving/`}
                     >
                         Serve
                     </Button>
                     <Button 
-                        className={`rounded-md ${location.pathname === '/demo/kitchen/' ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
-                        onClick={() => window.location.href = '/demo/kitchen'}
+                        className={`rounded-md ${location.pathname === `${urlHead}kitchen/` ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
+                        onClick={() => window.location.href = `${urlHead}kitchen/`}
                     >
                         Kitchen
                     </Button>
                 </div>
-                <DropdownMenu>
-                    <DropdownMenuTrigger>
-                        {token ? (
-                            <Avatar>
-                                <AvatarImage src={pfp} />
-                                <AvatarFallback>CN</AvatarFallback>
-                            </Avatar>
-                        ) : (
-                            <Avatar>
-                                <AvatarFallback>CN</AvatarFallback>
-                            </Avatar> 
-                        )
-                        }
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent>
-                        {token ? (
+                {token ? (
+                    <DropdownMenu>
+                        <DropdownMenuTrigger>
+                                <Avatar>
+                                    <AvatarImage src={pfp} />
+                                    <AvatarFallback>CN</AvatarFallback>
+                                </Avatar> 
+                        </DropdownMenuTrigger>
+                        <DropdownMenuContent align='end'>
                             <Button onClick={() => handleLogout()}>
                                 Logout
                             </Button>
-                        ) : (
-                            <Avatar>
-                                <AvatarFallback>CN</AvatarFallback>
-                            </Avatar> 
-                        )
-                        }
-                        
-                    </DropdownMenuContent>
-                </DropdownMenu>
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                ) : (
+                    <Button onClick={() => window.location.href = '/signin'} className="text-[0.7rem] md:text-[0.8rem]" variant="outline">Sign in</Button>
+                )}
+                
             </div>
         )
     )

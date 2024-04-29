@@ -6,6 +6,9 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_POST
 from rest_framework_simplejwt.tokens import RefreshToken
+from django.utils.log import logging
+from django.core import serializers
+logger = logging.getLogger(__name__)
 
 @require_POST
 def signup_view(request):
@@ -73,3 +76,33 @@ def whoami_view(request):
 
     return JsonResponse({"username": request.user.username})
 
+from .models import Product
+from .serializers import ProductSerializer
+
+@require_POST
+def create_product(request):
+    try:
+        data = json.loads(request.body)
+        price = data.get('price')
+        category = data.get('category')
+        status = data.get('status')
+        name = data.get('name')
+        image = data.get('image')
+
+        product = Product(
+            price=price,
+            category=category,
+            status=status,
+            name=name,
+            image=image
+        )
+        product.save()
+        return JsonResponse({"detail": "Product created successfully"})
+    except Exception as e:
+        logger.error(f"Error creating product: {str(e)}")
+        return JsonResponse({"detail": "Failed to create product"}, status=500)
+    
+def get_products(request):
+    products = Product.objects.all()
+    serializer = ProductSerializer(products, many=True)
+    return JsonResponse(serializer.data, safe=False)

@@ -7,15 +7,48 @@ import { useInView } from 'react-intersection-observer';
 import Logo from '../assets/waitless-logo.webp'
 import HeroPhoto from '../assets/stockphoto/herophoto.webp'
 import MenuVideo from '../assets/mp4/Menu.mp4'
+import pfp from '../assets/pfp-ph.webp'
 import { MenuTagSVG, KitchenTagSVG, LayoutTagSVG, ServingTagSVG } from '@/assets/svgs/HeroSVG'
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 function Hero () {
+    const handleLogout = async () => {
+        try {
+          const response = await fetch('/api/logout/', {
+            method: 'GET',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          });
+      
+          if (response.ok) {
+            // Logout successful
+            localStorage.removeItem('access-token');
+            window.location.href = '/';
+          } else {
+            // Logout failed
+            const data = await response.json();
+            console.error('Logout failed:', data.detail);
+            // Handle the error, show an error message, etc.
+          }
+        } catch (error) {
+          console.error('Logout error:', error);
+          // Handle any network or other errors
+        }
+      };
+
     const [isVideoVisible, setIsVideoVisible] = useState(false);
+    const token = localStorage.getItem('access-token') !== null
     const videoRef = useRef(null);
     const { ref, inView } = useInView({
         threshold: 0.5, 
         triggerOnce: true,
     });
+
+    const ctaMessage = token ? "Start" : "Let's have a look"
+
+    const ctaUrl = token ? "/" : "/demo/"
 
     if (inView && !isVideoVisible) {
         setIsVideoVisible(true);
@@ -29,10 +62,27 @@ function Hero () {
             <div className='flex flex-col items-center w-full z-[1]'>
                 <header className='flex flex-row md:py-[2rem] md:px-[6rem] justify-between items-center w-full'>
                     <img className='h-[2rem]' src={Logo}></img>
-                    <div className='flex gap-2 md:gap-4'>
+                    {token ? (
+                        <DropdownMenu>
+                            <DropdownMenuTrigger>
+                                    <Avatar>
+                                        <AvatarImage src={pfp} />
+                                        <AvatarFallback>CN</AvatarFallback>
+                                    </Avatar>
+                                    
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent align='end'>
+                                <Button onClick={() => handleLogout()}>
+                                    Logout
+                                </Button>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
+                    ) : (
+                        <div className='flex gap-2 md:gap-4'>
                         <Button onClick={() => window.location.href = '/signin'} className="text-[0.7rem] md:text-[0.8rem]" variant="outline">Sign in</Button>
                         <Button onClick={() => window.location.href = '/demo/menu'} className='text-[0.7rem] md:text-[0.8rem] hidden md:block'> Try it out now</Button>
-                    </div>
+                        </div>
+                    )}
                 </header>
 
                 <div className='flex flex-col items-center py-[7rem]'>
@@ -56,7 +106,7 @@ function Hero () {
                         <p className='text-[0.7rem] md:text-[1rem] text-center w-[85%] md:w-[60%]'>
                             For restaurants and cafes that are looking to streamline their POS system to be faster and more accurate.
                         </p>
-                        <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = '/demo/menu'}>Let's have a look</Button>
+                        <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = `${ctaUrl}menu`}>{ctaMessage}</Button>
                     </div>
                 </div>
 

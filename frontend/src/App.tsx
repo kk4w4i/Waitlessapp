@@ -37,6 +37,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Hero />} />
+            <Route path="/menu" element={<Menu />} />
             <Route path="/menu" element={<ProtectedRoute element={<Menu />} />} />
             <Route path="/demo/menu" element={<MenuDemo />} />
             <Route path="/demo/layout" element={<LayoutDemo />} />

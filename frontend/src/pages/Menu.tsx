@@ -1,4 +1,6 @@
 import * as React from "react"
+import { useState, useEffect } from "react"
+import Cookies from 'universal-cookie'
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -24,7 +26,14 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+  } from "@/components/ui/select"
+  
 import {
   Table,
   TableBody,
@@ -34,19 +43,28 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Input } from "@/components/ui/input"
+
+import {
     PlusCircledIcon
 } from "@radix-ui/react-icons"
- 
-const data: Product[] = [
-
-]
+import { ImageIcon, TagIcon } from "@/assets/svgs/IconSVGs"
+import ImageUploader from "@/components/ImageUploader"
 
 export type Product = {
   id: string
-  price: number
+  price: string
   category: "Sushi" | "Main" | "Small Dish" | "Dessert" | "Main" | "Soup" | "Share"
   status: "Published" | "Draft"
   name: string
+  image: string
 }
  
 export const columns: ColumnDef<Product>[] = [
@@ -170,15 +188,30 @@ export const columns: ColumnDef<Product>[] = [
  
 function Menu() {
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const cookies = new Cookies();
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+
+  // Add a state variable to store the fetched menu items
+  const [menuItems, setMenuItems] = useState<Product[]>([]);
+
+  useEffect(() => {
+    const fetchMenuItems = async () => {
+      try {
+        const response = await fetch('/api/products/');
+        const data: Product[] = await response.json();
+        setMenuItems(data);
+      } catch (error) {
+        console.error('Error fetching menu items:', error);
+      }
+    };
+
+    fetchMenuItems();
+  }, []);
  
   const table = useReactTable({
-    data,
+    data: menuItems,
     columns,
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
@@ -195,6 +228,92 @@ function Menu() {
       rowSelection,
     },
   })
+
+  const [product, setProduct] = useState<Product>({
+    id: '',
+    name: '',
+    price: '',
+    category: 'Sushi',
+    status: 'Draft',
+    image: '',
+  })
+
+  const handleChangeForMenuItem = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    setProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = async (status: "Published" | "Draft") => {  
+    try {
+      const response = await fetch('/api/create-product/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': cookies.get('csrftoken'), // Include the CSRF token
+        },
+        body: JSON.stringify({ ...product, status }),
+      });
+  
+      if (response.ok) {
+        // Product created successfully
+        console.log(`Product created with ${status} status`);
+        handleCloseClick()
+        // Optionally, you can reset the form or perform any other actions
+      } else {
+        // Handle error response
+        console.error('Failed to create product');
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  interface CustomButtonProps {
+    children?: React.ReactNode;
+    onClick?: () => void;
+  }
+  
+  function CustomButton({ children, onClick, ...rest }: CustomButtonProps) {
+    return (
+      <Button
+        className="flex gap-2 items-center p-0"
+        variant="ghost"
+        onClick={onClick}
+        {...rest}
+      >
+        {children}
+        <ImageIcon /> Photo
+      </Button>
+    );
+  }
+
+  const handleImageUpload = (base64: string) => {
+    setProduct((prevProduct) => ({
+        ...prevProduct,
+        ["image"]: base64,
+      }));
+}
+
+const handleCloseClick = () => {
+    setProduct({
+        id: '',
+        name: '',
+        price: '',
+        category: 'Sushi',
+        status: 'Draft',
+        image: '', 
+    })
+}
+
+const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert" | "Main" | "Soup" | "Share") => {
+    setProduct((prevProduct) => ({
+        ...prevProduct,
+        ["category"]: value,
+      })); 
+}
  
   return (
     <div className="flex flex-col w-full px-[1rem] md:px-[2rem]">
@@ -238,8 +357,67 @@ function Menu() {
                     })}
                 </DropdownMenuContent>
                 </DropdownMenu>
-                <Button className="md:flex hidden rounded-md gap-2">Create <PlusCircledIcon/></Button>
-                <Button className="md:hidden block rounded-md gap-2"><PlusCircledIcon/></Button>
+                <Dialog>
+                    <DialogTrigger asChild>
+                        <div>
+                            <Button className="md:flex hidden rounded-md gap-2">Create <PlusCircledIcon/></Button>
+                            <Button className="md:hidden block rounded-md gap-2"><PlusCircledIcon/></Button>
+                        </div>
+                    </DialogTrigger>
+                    <DialogContent onCloseClick={handleCloseClick}>
+                        <DialogHeader>
+                        <DialogTitle>Create Menu Item</DialogTitle>
+                        <DialogDescription>
+                            Add details of the menu item, these items will appear on order page if you select "Publish".
+                        </DialogDescription>
+                        </DialogHeader>
+                        <form className="flex flex-col gap-2" onSubmit={(event) => {event.preventDefault();}}>
+                            <label>Name</label>
+                            <Input
+                                name="name"
+                                value={product.name}
+                                onChange={handleChangeForMenuItem}
+                            />
+                            <label>Price</label>
+                            <Input
+                                name="price"
+                                value={product.price}
+                                onChange={handleChangeForMenuItem}
+                                /> 
+                            <div className="flex flex-row gap-4 items-center justify-start w-full">
+                                <ImageUploader 
+                                    onImageUpload={handleImageUpload}
+                                    label=""
+                                    buttonComponent={CustomButton}
+                                />
+                                <Select value={product.category} onValueChange={handleCategoryChange}>
+                                    <SelectTrigger>
+                                        <div className="flex gap-2 items-center">
+                                            <TagIcon/><SelectValue placeholder="Category"/>
+                                        </div>
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="Sushi">Sushi</SelectItem>
+                                        <SelectItem value="Main">Main</SelectItem>
+                                        <SelectItem value="Small Dish">Small Dish</SelectItem>
+                                        <SelectItem value="Dessert">Dessert</SelectItem>
+                                        <SelectItem value="Soup">Soup</SelectItem>
+                                        <SelectItem value="Share">Share</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                            </div>
+                            
+                            <div className="flex gap-4 justify-end">
+                                <Button className="rounded-md" variant="outline" type="submit" onClick={() => handleSubmit('Draft')}>
+                                    Draft
+                                </Button>
+                                <Button className="rounded-md" type="submit" onClick={() => handleSubmit('Published')}>
+                                    Publish
+                                </Button>
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </div>
         </div>
         <div className="rounded-md border">

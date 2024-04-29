@@ -39,7 +39,6 @@ function Signin () {
           }
       
           const data = await response.json();
-          console.log(data);
           window.location.href = '/menu'
       
           // Store the access token in local storage
