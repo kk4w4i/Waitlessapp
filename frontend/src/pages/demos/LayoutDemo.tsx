@@ -157,4 +157,5 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
     );
   }
 
+
   export default Layout

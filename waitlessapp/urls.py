@@ -35,6 +35,7 @@ urlpatterns = [
     path('signup/', index_view, name='signup'),
     path('user/', index_view, name='user'),
     path('menu/<str:store_url>/', index_view, name='menu_store'),
+    path('layout/<str:store_url>/', index_view, name='layout_store'),
     path('demo/menu/', index_view, name='index'),
     path('demo/layout/', index_view, name='index'),
     path('demo/serving/', index_view, name='index'),

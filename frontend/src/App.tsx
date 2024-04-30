@@ -13,6 +13,7 @@ import Signin from './pages/Signin'
 // Protected Pages
 import Menu from './pages/Menu'
 import User from './pages/User'
+import Layout from './pages/Layout'
 
 // Demo Pages
 import MenuDemo from './pages/demos/MenuDemo'
@@ -40,9 +41,10 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Hero />} />
-            <Route path="/user" element={<User />}/>
+            <Route path="/layout/" element={<Layout />}/>
             <Route path="/user" element={<ProtectedRoute element={<User />} />} />
             <Route path="/menu/:store-url" element={<ProtectedRoute element={<Menu />} />} />
+            <Route path="/layout/:store-url" element={<ProtectedRoute element={<Layout />} />} />
             <Route path="/demo/menu" element={<MenuDemo />} />
             <Route path="/demo/layout" element={<LayoutDemo />} />
             <Route path="/demo/serving" element={<ServingDemo />} />

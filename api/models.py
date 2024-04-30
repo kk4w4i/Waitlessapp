@@ -53,3 +53,17 @@ class Product(models.Model):
 
     def __str__(self):
         return self.name
+    
+class Layout(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    name = models.CharField(max_length=100)
+    store_id = models.CharField(max_length=100)
+
+class Table(models.Model):
+    layout = models.ForeignKey(Layout, on_delete=models.CASCADE, related_name='tables')
+    store_id = models.CharField(max_length=100) 
+    table_number = models.IntegerField()
+    position_x = models.DecimalField(max_digits=10, decimal_places=5)
+    position_y = models.DecimalField(max_digits=10, decimal_places=5)
+    width = models.DecimalField(max_digits=10, decimal_places=5)
+    height = models.DecimalField(max_digits=10, decimal_places=5)

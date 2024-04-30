@@ -9,6 +9,11 @@ from django.contrib.auth.decorators import login_required
 from rest_framework_simplejwt.tokens import RefreshToken
 from django.utils.log import logging
 logger = logging.getLogger(__name__)
+from django.db import transaction
+from decimal import Decimal, ROUND_HALF_UP
+
+from .models import Store, StoreProfile, Product, Layout, Table
+from .serializers import StoreSerializer, StoreProfileSerializer, ProductSerializer
 
 @require_POST
 def signup_view(request):
@@ -57,9 +62,6 @@ def login_view(request):
         "refresh_token": str(refresh)
     })
 
-
-
-
 def logout_view(request):
     if not request.user.is_authenticated:
         return JsonResponse({"detail": "You are not logged in"}, status=400)
@@ -79,9 +81,6 @@ def whoami_view(request):
         return JsonResponse({"isauthenticated": False})
 
     return JsonResponse({"username": request.user.username})
-
-from .models import Product
-from .serializers import ProductSerializer
 
 @require_POST
 def create_product(request):
@@ -119,16 +118,9 @@ def create_product(request):
 def get_products(request):
     data = json.loads(request.body)
     store_id = data.get('storeId')
-    print(store_id)
     products = Product.objects.filter(store_id=store_id)
-    print(products)
     serializer = ProductSerializer(products, many=True)
     return JsonResponse(serializer.data, safe=False)
-
-from .models import Store
-from .serializers import StoreSerializer
-from .models import StoreProfile
-from .serializers import StoreProfileSerializer
 
 @require_POST
 @login_required
@@ -207,6 +199,69 @@ def get_store_profiles(request):
     return JsonResponse(serializer.data, safe=False) 
 
 
+@require_POST
+@login_required
+def create_layout(request):
+    data = json.loads(request.body)
+    store_id = data.get('store_id')
+    
+    if store_id:
+        try:
+            store = Store.objects.get(id=store_id)
+            store_name = store.name
+            with transaction.atomic():
+                # Update or create the layout
+                layout, created = Layout.objects.update_or_create(
+                    store_id=store_id,
+                    defaults={'name': store_name}
+                )
+                
+                # Clear existing tables if layout already exists
+                if not created:
+                    Table.objects.filter(layout=layout).delete()
 
+                # Create new tables
+                tables_data = data.get('tables')
+                for table_data in tables_data:
+                    positionX = round_decimal(table_data['positionX'])
+                    positionY = round_decimal(table_data['positionY'])
+                    width = round_decimal(table_data['width'])
+                    length = round_decimal(table_data['length'])
+                    Table.objects.create(
+                        layout=layout,
+                        store_id=store_id,
+                        position_x=positionX,
+                        position_y=positionY,
+                        width=width,
+                        height=length,
+                        table_number=table_data['tableNumber']
+                    )
+
+                return JsonResponse({"detail": "Layout successfully created or updated with tables"}, status=201)
+        except Exception as e:
+            return JsonResponse({"detail": str(e)}, status=500)
+        
+def get_seating_layout(request):
+    data = json.loads(request.body)
+    store_id = data.get('storeId')
+    
+    if store_id:
+        try:
+            layout = Layout.objects.get(store_id=store_id)
+            
+            tables = Table.objects.filter(layout=layout).values(
+                'table_number', 'position_x', 'position_y', 'width', 'height'
+            )
+            
+            tables_list = list(tables)
+            
+            return JsonResponse({"tables": tables_list}, status=200)
+        except Exception as e:
+            logger.error(f"Error retrieving layout: {str(e)}")
+            return JsonResponse({"detail": "Layout not found for the given store ID"}, status=404)
+        
+def round_decimal(value):
+    """Round the decimal to a maximum of 5 decimal places."""
+    return Decimal(value).quantize(Decimal('.00001'), rounding=ROUND_HALF_UP)
 
     

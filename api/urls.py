@@ -13,5 +13,7 @@ urlpatterns = [
     path("create-store/", views.create_store, name="api_store"),
     path("stores/", views.get_stores, name="api_stores"),
     path("create-store-profile/", views.create_store_profile, name="api_add_store_profile"),
-    path("profiles/", views.get_store_profiles, name="api_store_profiles")
+    path("profiles/", views.get_store_profiles, name="api_store_profiles"),
+    path('create-layout/', views.create_layout, name='api_create_layout'),
+    path('get-seating-layout/', views.get_seating_layout, name='get-seating-layout'),
 ]

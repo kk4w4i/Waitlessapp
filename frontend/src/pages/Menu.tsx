@@ -264,18 +264,15 @@ function Menu() {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'X-CSRFToken': cookies.get('csrftoken'), // Include the CSRF token
+          'X-CSRFToken': cookies.get('csrftoken'),
         },
         body: JSON.stringify({ ...product, status, storeId }),
       });
   
       if (response.ok) {
-        // Product created successfully
         console.log(`Product created with ${status} status`);
         handleCloseClick()
-        // Optionally, you can reset the form or perform any other actions
       } else {
-        // Handle error response
         console.error('Failed to create product');
       }
     } catch (error) {
