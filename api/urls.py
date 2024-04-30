@@ -9,5 +9,9 @@ urlpatterns = [
     path("whoami/", views.whoami_view, name="api_whoami"),
     path("signup/", views.signup_view, name="api_signup"),
     path("create-product/", views.create_product, name="api_product"),
-    path("products/", views.get_products, name="api_products")
+    path("products/", views.get_products, name="api_products"),
+    path("create-store/", views.create_store, name="api_store"),
+    path("stores/", views.get_stores, name="api_stores"),
+    path("create-store-profile/", views.create_store_profile, name="api_add_store_profile"),
+    path("profiles/", views.get_store_profiles, name="api_store_profiles")
 ]

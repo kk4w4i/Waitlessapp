@@ -48,7 +48,7 @@ function Hero () {
 
     const ctaMessage = token ? "Start" : "Let's have a look"
 
-    const ctaUrl = token ? "/" : "/demo/"
+    const ctaUrl = token ? "/user" : "/demo/menu"
 
     if (inView && !isVideoVisible) {
         setIsVideoVisible(true);
@@ -106,7 +106,7 @@ function Hero () {
                         <p className='text-[0.7rem] md:text-[1rem] text-center w-[85%] md:w-[60%]'>
                             For restaurants and cafes that are looking to streamline their POS system to be faster and more accurate.
                         </p>
-                        <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = `${ctaUrl}menu`}>{ctaMessage}</Button>
+                        <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = `${ctaUrl}`}>{ctaMessage}</Button>
                     </div>
                 </div>
 

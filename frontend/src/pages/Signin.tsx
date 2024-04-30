@@ -17,7 +17,7 @@ import { Label } from "@/components/ui/label"
 
 function Signin () {
     const cookies = new Cookies();
-    const [email, setEmail] = useState('');
+    const [name, setName] = useState('');
     const [password, setPassword] = useState('');
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
@@ -31,7 +31,7 @@ function Signin () {
               "X-CSRFToken": cookies.get("csrftoken"),
             },
             credentials: "same-origin",
-            body: JSON.stringify({ username: email, password: password }),
+            body: JSON.stringify({ username: name, password: password }),
           });
       
           if (!response.ok) {
@@ -39,7 +39,7 @@ function Signin () {
           }
       
           const data = await response.json();
-          window.location.href = '/menu'
+          window.location.href = '/user'
       
           // Store the access token in local storage
           localStorage.setItem("access-token", data.access_token);
@@ -60,20 +60,20 @@ function Signin () {
             <CardHeader>
                 <CardTitle className="text-2xl">Login</CardTitle>
                 <CardDescription>
-                Enter your email below to login to your account
+                Enter your Username below to login to your account
                 </CardDescription>
             </CardHeader>
             <CardContent>
                 <form onSubmit={handleSubmit} className="grid gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Email</Label>
+                        <Label htmlFor="email">Username</Label>
                         <Input
-                        id="email"
-                        type="email"
-                        placeholder="m@example.com"
+                        id="name"
+                        type="name"
+                        placeholder="Username"
                         required
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
                         />
                     </div>
                     <div className="grid gap-2">

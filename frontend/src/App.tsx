@@ -1,6 +1,7 @@
 import { FC, ReactElement } from 'react';
 import { Navigate, BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css'
+import { StoreProvider } from './context/StoreContext';
 // Page imports
 
 // Public Pages
@@ -11,6 +12,7 @@ import Signin from './pages/Signin'
 
 // Protected Pages
 import Menu from './pages/Menu'
+import User from './pages/User'
 
 // Demo Pages
 import MenuDemo from './pages/demos/MenuDemo'
@@ -34,11 +36,13 @@ function App() {
 
   return (
       <Router>
+        <StoreProvider>
           <Navbar />
           <Routes>
             <Route path="/" element={<Hero />} />
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/menu" element={<ProtectedRoute element={<Menu />} />} />
+            <Route path="/user" element={<User />}/>
+            <Route path="/user" element={<ProtectedRoute element={<User />} />} />
+            <Route path="/menu/:store-url" element={<ProtectedRoute element={<Menu />} />} />
             <Route path="/demo/menu" element={<MenuDemo />} />
             <Route path="/demo/layout" element={<LayoutDemo />} />
             <Route path="/demo/serving" element={<ServingDemo />} />
@@ -47,6 +51,7 @@ function App() {
             <Route path="/signin" element={<Signin />} />
             <Route path="/signup" element={<Signup />} />
           </Routes>
+        </StoreProvider>
       </Router>
   )
 }

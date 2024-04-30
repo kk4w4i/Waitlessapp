@@ -1,5 +1,6 @@
 import * as React from "react"
 import { useState, useEffect } from "react"
+import { useStore } from "@/hooks/useStore"
 import Cookies from 'universal-cookie'
 import {
   ColumnDef,
@@ -44,6 +45,7 @@ import {
 } from "@/components/ui/table"
 import {
     Dialog,
+    DialogClose,
     DialogContent,
     DialogDescription,
     DialogHeader,
@@ -65,6 +67,7 @@ export type Product = {
   status: "Published" | "Draft"
   name: string
   image: string
+  storeId: string
 }
  
 export const columns: ColumnDef<Product>[] = [
@@ -192,19 +195,27 @@ function Menu() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const { storeId } = useStore()
 
-  // Add a state variable to store the fetched menu items
   const [menuItems, setMenuItems] = useState<Product[]>([]);
 
   useEffect(() => {
     const fetchMenuItems = async () => {
-      try {
-        const response = await fetch('/api/products/');
-        const data: Product[] = await response.json();
-        setMenuItems(data);
-      } catch (error) {
-        console.error('Error fetching menu items:', error);
+      const response = await fetch('/api/products/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': cookies.get('csrftoken'), // Include the CSRF token
+        },
+        body: JSON.stringify({ storeId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to fetch products');
       }
+
+      const data: Product[] = await response.json();
+      setMenuItems(data);
     };
 
     fetchMenuItems();
@@ -236,6 +247,7 @@ function Menu() {
     category: 'Sushi',
     status: 'Draft',
     image: '',
+    storeId: ''
   })
 
   const handleChangeForMenuItem = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -246,7 +258,7 @@ function Menu() {
     }));
   };
 
-  const handleSubmit = async (status: "Published" | "Draft") => {  
+  const handleSubmit = async (status: "Published" | "Draft", storeId: string | null) => {  
     try {
       const response = await fetch('/api/create-product/', {
         method: 'POST',
@@ -254,7 +266,7 @@ function Menu() {
           'Content-Type': 'application/json',
           'X-CSRFToken': cookies.get('csrftoken'), // Include the CSRF token
         },
-        body: JSON.stringify({ ...product, status }),
+        body: JSON.stringify({ ...product, status, storeId }),
       });
   
       if (response.ok) {
@@ -305,6 +317,7 @@ const handleCloseClick = () => {
         category: 'Sushi',
         status: 'Draft',
         image: '', 
+        storeId: ''
     })
 }
 
@@ -314,13 +327,14 @@ const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert"
         ["category"]: value,
       })); 
 }
- 
+
   return (
     <div className="flex flex-col w-full px-[1rem] md:px-[2rem]">
         <div className="flex flex-col md:flex-row justify-between items:start md:items-end py-4">
             <div className="flex flex-col items-start">
                 <span className="flex flex-row items-center gap-2 text-[3rem] font-bold">Store Menu</span>
                 <p className="text-neutral-500">Create, edit or delete your items here</p>
+                <p className="text-neutral-500"></p>
             </div>
             <div className="flex items-center gap-1 md:gap-4 mt-2 md:mt-0">
                 <Input
@@ -408,12 +422,14 @@ const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert"
                             </div>
                             
                             <div className="flex gap-4 justify-end">
-                                <Button className="rounded-md" variant="outline" type="submit" onClick={() => handleSubmit('Draft')}>
-                                    Draft
+                              <DialogClose>
+                                <Button className="rounded-md" variant="outline" type="submit" onClick={() => handleSubmit('Draft', storeId)}>
+                                  Draft
                                 </Button>
-                                <Button className="rounded-md" type="submit" onClick={() => handleSubmit('Published')}>
-                                    Publish
+                                <Button className="rounded-md" type="submit" onClick={() => handleSubmit('Published', storeId)}>
+                                  Publish
                                 </Button>
+                              </DialogClose>
                             </div>
                         </form>
                     </DialogContent>
