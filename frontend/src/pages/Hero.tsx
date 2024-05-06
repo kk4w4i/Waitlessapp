@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/button'
 import { useRef, useState } from 'react';
 import ReactPlayer from 'react-player';
 import { useInView } from 'react-intersection-observer';
+import { useCookies } from 'react-cookie';
 
 // assets
 import Logo from '../assets/waitless-logo.webp'
@@ -11,20 +12,24 @@ import pfp from '../assets/pfp-ph.webp'
 import { MenuTagSVG, KitchenTagSVG, LayoutTagSVG, ServingTagSVG } from '@/assets/svgs/HeroSVG'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useUser } from '@/hooks/useUser';
 
 function Hero () {
+    const [cookies] = useCookies(['csrftoken'])
+    const { userId }  = useUser()
+
     const handleLogout = async () => {
         try {
           const response = await fetch('/api/logout/', {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRFToken': cookies.csrftoken,
             },
           });
       
           if (response.ok) {
             // Logout successful
-            localStorage.removeItem('access-token');
             window.location.href = '/';
           } else {
             // Logout failed
@@ -39,16 +44,15 @@ function Hero () {
       };
 
     const [isVideoVisible, setIsVideoVisible] = useState(false);
-    const token = localStorage.getItem('access-token') !== null
     const videoRef = useRef(null);
     const { ref, inView } = useInView({
         threshold: 0.5, 
         triggerOnce: true,
     });
 
-    const ctaMessage = token ? "Start" : "Let's have a look"
+    const ctaMessage = userId ? "Start" : "Let's have a look"
 
-    const ctaUrl = token ? "/user" : "/demo/menu"
+    const ctaUrl = userId ? "/user" : "/demo/menu"
 
     if (inView && !isVideoVisible) {
         setIsVideoVisible(true);
@@ -62,7 +66,7 @@ function Hero () {
             <div className='flex flex-col items-center w-full z-[1]'>
                 <header className='flex flex-row md:py-[2rem] md:px-[6rem] justify-between items-center w-full'>
                     <img className='h-[2rem]' src={Logo}></img>
-                    {token ? (
+                    {userId ? (
                         <DropdownMenu>
                             <DropdownMenuTrigger>
                                     <Avatar>

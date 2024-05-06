@@ -1,9 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button";
 import Logo from '../assets/waitless-logo.webp';
-import Cookies from 'universal-cookie'
-
 
 import {
   Card,
@@ -14,42 +12,39 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useUser } from '@/hooks/useUser';
 
 function Signin () {
-    const cookies = new Cookies();
     const [name, setName] = useState('');
     const [password, setPassword] = useState('');
+    const navigate = useNavigate()
+    const { setUserId } = useUser()
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
-        e.preventDefault();
-      
-        try {
+      e.preventDefault();
+  
+      try {
           const response = await fetch("/api/login/", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "X-CSRFToken": cookies.get("csrftoken"),
-            },
-            credentials: "same-origin",
-            body: JSON.stringify({ username: name, password: password }),
+              method: "POST",
+              headers: {
+                  "Content-Type": "application/json",
+              },
+              credentials: "same-origin",
+              body: JSON.stringify({ name, password }),
           });
-      
+  
           if (!response.ok) {
-            throw new Error("Login failed");
+            throw new Error("Login failed")
           }
-      
-          const data = await response.json();
-          window.location.href = '/user'
-      
-          // Store the access token in local storage
-          localStorage.setItem("access-token", data.access_token);
-      
-          // Handle successful login, e.g., redirect to a protected page
-        } catch (error) {
-          console.error("Login error:", error);
-          // Handle login error, e.g., display an error message
-        }
-      };
+          const data = await response.json()
+          setUserId(data.username)
+          navigate('/user')
+  
+          
+      } catch (error) {
+          console.error("Login error:", error)
+      }
+  };
 
   return (
     <div>
@@ -66,11 +61,11 @@ function Signin () {
             <CardContent>
                 <form onSubmit={handleSubmit} className="grid gap-4">
                     <div className="grid gap-2">
-                        <Label htmlFor="email">Username</Label>
+                        <Label htmlFor="email">Email</Label>
                         <Input
                         id="name"
                         type="name"
-                        placeholder="Username"
+                        placeholder="Email"
                         required
                         value={name}
                         onChange={(e) => setName(e.target.value)}

@@ -10,11 +10,9 @@ interface StoreContextType {
 const StoreContext = createContext<StoreContextType | undefined>(undefined);
 
 const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-    // Initialize state with values from session storage or null
     const [storeId, setStoreIdState] = useState<string | null>(sessionStorage.getItem('storeId'));
     const [storeUrl, setStoreUrlState] = useState<string | null>(sessionStorage.getItem('storeUrl'));
 
-    // Update session storage whenever the values change
     useEffect(() => {
         if (storeId !== null) sessionStorage.setItem('storeId', storeId);
         else sessionStorage.removeItem('storeId');
@@ -25,7 +23,6 @@ const StoreProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
         else sessionStorage.removeItem('storeUrl');
     }, [storeUrl]);
 
-    // Wrapper functions to update state and trigger useEffect
     const setStoreId = (id: string | null) => {
         setStoreIdState(id);
     };

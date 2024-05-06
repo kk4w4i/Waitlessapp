@@ -4,17 +4,21 @@ import pfp from '../assets/pfp-ph.webp'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/hooks/useStore'
+import { useCookies } from 'react-cookie'
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from './ui/button'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import { useUser } from '@/hooks/useUser'
 
 function Navbar() {
     const location = useLocation()
     const navigate = useNavigate()
     const { storeUrl } = useStore()
     const [isVisible, setIsVisible] = useState(true);
-    const token = localStorage.getItem('access-token') !== null
+    const { userId } = useUser()
+    const [cookies] = useCookies(['csrftoken'])
+
 
     const menuPage = {
         '^/menu/.*': true,
@@ -101,10 +105,10 @@ function Navbar() {
 
     const appPages = checkPath(location.pathname)
 
-    const menuUrl =  token ? `/menu/${storeUrl}` : "/demo/menu"
-    const layoutUrl =  token ? `/layout/${storeUrl}` : "/demo/layout"
-    const serveUrl =  token ? `/serving/${storeUrl}` : "/demo/serving"
-    const kitchenUrl =  token ? `/kitchen/${storeUrl}` : "/demo/kitchen" 
+    const menuUrl =  userId ? `/menu/${storeUrl}` : "/demo/menu"
+    const layoutUrl =  userId ? `/layout/${storeUrl}` : "/demo/layout"
+    const serveUrl =  userId ? `/serving/${storeUrl}` : "/demo/serving"
+    const kitchenUrl =  userId ? `/kitchen/${storeUrl}` : "/demo/kitchen" 
 
     useEffect(() => {
         const handleScroll = () => {
@@ -122,7 +126,7 @@ function Navbar() {
         return () => {
           window.removeEventListener('scroll', handleScroll);
         };
-    }, []);
+    },[]);
 
     const handleLogout = async () => {
         try {
@@ -130,22 +134,18 @@ function Navbar() {
             method: 'GET',
             headers: {
               'Content-Type': 'application/json',
+              'X-CSRFToken': cookies.csrftoken,
             },
           });
       
           if (response.ok) {
-            // Logout successful
-            localStorage.removeItem('access-token');
-            navigate('/');
+             navigate('/');
           } else {
-            // Logout failed
             const data = await response.json();
             console.error('Logout failed:', data.detail);
-            // Handle the error, show an error message, etc.
           }
         } catch (error) {
           console.error('Logout error:', error);
-          // Handle any network or other errors
         }
       };
 
@@ -209,7 +209,7 @@ function Navbar() {
                         Kitchen
                     </Button>
                 </div>
-                {token ? (
+                {userId ? (
                     <DropdownMenu>
                         <DropdownMenuTrigger>
                                 <Avatar>

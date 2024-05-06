@@ -2,6 +2,9 @@ import { FC, ReactElement } from 'react';
 import { Navigate, BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css'
 import { StoreProvider } from './context/StoreContext';
+import { CookiesProvider } from 'react-cookie'
+import { useUser } from './hooks/useUser';
+
 // Page imports
 
 // Public Pages
@@ -27,33 +30,34 @@ interface ProtectedRouteProps {
 }
 
 const ProtectedRoute: FC<ProtectedRouteProps> = ({ element: element }) => {
-  const token = localStorage.getItem('access-token');
-  console.log(token);
+  const { userId } = useUser()
 
-  return token ? element : <Navigate to="/signin/" replace />;
+  return userId ? element : <Navigate to="/signin/" replace />;
 };
 
 function App() {
 
   return (
       <Router>
-        <StoreProvider>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Hero />} />
-            <Route path="/layout/" element={<Layout />}/>
-            <Route path="/user" element={<ProtectedRoute element={<User />} />} />
-            <Route path="/menu/:store-url" element={<ProtectedRoute element={<Menu />} />} />
-            <Route path="/layout/:store-url" element={<ProtectedRoute element={<Layout />} />} />
-            <Route path="/demo/menu" element={<MenuDemo />} />
-            <Route path="/demo/layout" element={<LayoutDemo />} />
-            <Route path="/demo/serving" element={<ServingDemo />} />
-            <Route path="/demo/kitchen" element={<KitchenDemo />} />
-            <Route path="/demo/order" element={<OrderDemo />} />
-            <Route path="/signin" element={<Signin />} />
-            <Route path="/signup" element={<Signup />} />
-          </Routes>
-        </StoreProvider>
+        <CookiesProvider>
+          <StoreProvider>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Hero />} />
+              <Route path="/layout/" element={<Layout />}/>
+              <Route path="/user" element={<ProtectedRoute element={<User />} />} />
+              <Route path="/menu/:store-url" element={<ProtectedRoute element={<Menu />} />} />
+              <Route path="/layout/:store-url" element={<ProtectedRoute element={<Layout />} />} />
+              <Route path="/demo/menu" element={<MenuDemo />} />
+              <Route path="/demo/layout" element={<LayoutDemo />} />
+              <Route path="/demo/serving" element={<ServingDemo />} />
+              <Route path="/demo/kitchen" element={<KitchenDemo />} />
+              <Route path="/demo/order" element={<OrderDemo />} />
+              <Route path="/signin" element={<Signin />} />
+              <Route path="/signup" element={<Signup />} />
+            </Routes>
+          </StoreProvider>
+        </CookiesProvider>
       </Router>
   )
 }

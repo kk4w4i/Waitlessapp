@@ -1,8 +1,7 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Button } from "@/components/ui/button"
 import Logo from '../assets/waitless-logo.webp'
-import Cookies from 'universal-cookie'
 
 import {
   Card,
@@ -13,41 +12,40 @@ import {
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { useUser } from '@/hooks/useUser';
 
 function Signup () {
-    const cookies = new Cookies();
     const [firstName, setFirstName] = useState('');
     const [lastName, setLastName] = useState('');
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const [errorMessage, setErrorMessage] = useState('');
+    const navigate = useNavigate()
+    const { setUserId } = useUser()
 
     const handleSubmit = async (e: { preventDefault: () => void; }) => {
         e.preventDefault();
       
+        console.log(firstName, lastName, email, password)
         try {
           const response = await fetch("/api/signup/", {
             method: "POST",
             headers: {
               "Content-Type": "application/json",
-              "X-CSRFToken": cookies.get("csrftoken"),
             },
             credentials: "same-origin",
             body: JSON.stringify({ firstName, lastName, email, password }),
           });
       
-          if (!response.ok) {
-            throw new Error("Signup failed");
+          if (response.ok) {
+            const data = await response.json()
+            setUserId(data.username)
+            navigate("/user")
+            
+          } else {
+            throw new Error("Login failed")
           }
-      
-          const data = await response.json();
-          console.log(data);
-      
-          // Store the access token in local storage
-          localStorage.setItem("access-token", data.access_token);
-      
-          // Redirect the user to '/menu' after successful signup
-          window.location.href = '/menu';
+
         } catch (error) {
           console.error("Signup error:", error);
           setErrorMessage("An error occurred during signup. Please try again.");

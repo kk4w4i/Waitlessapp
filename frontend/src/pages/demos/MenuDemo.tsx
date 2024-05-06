@@ -212,11 +212,11 @@ export const columns: ColumnDef<Product>[] = [
       let textColor;
   
       if (status === "Published") {
-        textColor = "text-green-600"; // Tailwind CSS class for green text
+        textColor = "text-green-600";
       } else if (status === "Draft") {
-        textColor = "text-red-500"; // Tailwind CSS class for red text
+        textColor = "text-red-500"; 
       } else {
-        textColor = "text-gray-500"; // Tailwind CSS class for gray text
+        textColor = "text-gray-500"; 
       }
   
       return (

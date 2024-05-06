@@ -20,11 +20,12 @@ import Cookies from 'universal-cookie';
 
 interface DraggableComponentProps {
     id: number;
+    displayIndex: number
     xLength: number;
     yLength: number;
-    onStop?: (id: number, x: number, y: number) => void;
-    onResize?: (id: number, width: number, height: number) => void;
-    onRemove?: (id: number) => void;
+    onStop?: (displayIndex: number, x: number, y: number) => void;
+    onResize?: (displayIndex: number, width: number, height: number) => void;
+    onRemove?: (displayIndex: number) => void;
     position: { x: number; y: number };
 }
 
@@ -36,7 +37,7 @@ export type Table = {
     tableNumber: number
 }
 
-const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, position, onStop, onResize, xLength, yLength }) => {
+const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayIndex, onRemove, position, onStop, onResize, xLength, yLength }) => {
     const [width, setWidth] = useState(xLength);
     const [height, setHeight] = useState(yLength);
     const [isResizable, setIsResizable] = useState(false);
@@ -48,7 +49,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
   
     const handleRemove = () => {
         if (onRemove) {
-            onRemove(id);
+            onRemove(displayIndex);
         }
     };
   
@@ -100,7 +101,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
                         className="flex items-center justify-center bg-primary text-white rounded-md draggable-handle"
                         style={{ width: `${width}px`, height: `${height}px` }}
                         >
-                        {id}
+                        {displayIndex}
                         </div>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -126,7 +127,6 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
     const [tables, setTables] = useState<Table[]>([]);
     const { storeId } = useStore()
     const cookies = new Cookies();
-    const [nextIndex, setNextIndex] = useState<number>(0)
 
     useEffect(() => {
         const fetchTables = async () => {
@@ -187,13 +187,12 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
     const handleAddComponent = (width: number, length: number, positionX: number | null, positionY: number | null, tableNumber: number) => {
         const startPositionX = positionX ?? windowWidth / 2.05;
         const startPositionY = positionY ?? windowHeight / 4;
-        
-        setNextIndex(tableNumber + 1)
     
         setComponents(prevComponents => [
             ...prevComponents,
             {
                 id: tableNumber,
+                displayIndex: tableNumber,
                 position: { x: startPositionX, y: startPositionY },
                 xLength: width,
                 yLength: length
@@ -212,10 +211,28 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
         ]);
     };
 
-    const handleRemoveComponent = (id: number) => {
-        setNextIndex(id)
-        setComponents(components.filter((component) => component.id !== id));
-        setTables(tables.filter((table) => table.tableNumber !== id));
+    console.log(components)
+
+    const handleRemoveComponent = (removeId: number) => {
+        const filteredComponents = components.filter((component) => component.displayIndex !== removeId);
+        const filteredTables = tables.filter((table) => table.tableNumber !== removeId);
+    
+        const updatedComponents = filteredComponents.map((component) => {
+            if (component.displayIndex > removeId) {
+                return { ...component, displayIndex: component.displayIndex - 1 };
+            }
+            return component;
+        });
+    
+        const updatedTables = filteredTables.map((table) => {
+            if (table.tableNumber > removeId) {
+                return { ...table, tableNumber: table.tableNumber - 1 };
+            }
+            return table;
+        });
+    
+        setComponents(updatedComponents);
+        setTables(updatedTables);
     };
 
     const handleSubmit = async (store_id: string | null) => {  
@@ -255,13 +272,14 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, onRemove, p
 
                
         
-                <Button onClick={() => handleAddComponent(40, 40, null, null, nextIndex)} className="fixed bottom-[5vh] left-1/2 -translate-x-1/2 size-[4rem] drop-shadow-lg z-[1]">
+                <Button onClick={() => handleAddComponent(40, 40, null, null, components.length)} className="fixed bottom-[5vh] left-1/2 -translate-x-1/2 size-[4rem] drop-shadow-lg z-[1]">
                 <PlusIcon />
                 </Button>
                 {components.map((component) => (
                         <DraggableComponent
                             key={component.id}
                             id={component.id}
+                            displayIndex={component.displayIndex}
                             onRemove={handleRemoveComponent}
                             onStop={handleDragStop}
                             onResize={handleResize}

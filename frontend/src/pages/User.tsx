@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
-import Cookies from 'universal-cookie'
 import { useStore } from "@/hooks/useStore"
 import {
     Dialog,
@@ -19,6 +18,8 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import Logo from '../assets/waitless-logo.webp'
 import pfp from '../assets/pfp-ph.webp'
 import { motion } from 'framer-motion'
+import { useCookies } from "react-cookie"
+import { useUser } from "@/hooks/useUser"
 
 export type Store = {
     name: string
@@ -38,11 +39,11 @@ export type StoreProfile = {
 
 
 function User () {
-    const token = localStorage.getItem('access-token') !== null
     const [currentStep, setCurrentStep] = useState(0)
-    const cookies = new Cookies();
     const navigate = useNavigate()
     const { setStoreId, setStoreUrl } = useStore();
+    const { userId } = useUser()
+    const [cookies] = useCookies(['csrftoken'])
 
     const [storeProfiles, setStoreProfiles] = useState<StoreProfile[]>([]);
 
@@ -130,7 +131,7 @@ function User () {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'X-CSRFToken': cookies.get('csrftoken'),
+                'X-CSRFToken': cookies.csrftoken,
             },
             body: JSON.stringify({ ...store }),
             });
@@ -152,7 +153,7 @@ function User () {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'X-CSRFToken': cookies.get('csrftoken'),
+                    'X-CSRFToken': cookies.csrftoken,
                 },
                 body: JSON.stringify({ key }),
             })
@@ -172,7 +173,7 @@ function User () {
         <div className="flex flex-col w-full px-[1rem] md:px-[2rem]">
         <header className='flex flex-row md:py-[2rem] justify-between items-center w-full'>
             <img onClick={() => window.location.href = '/'} className="h-[1.8rem]" src={Logo}></img>
-                {token ? (
+                {userId ? (
                     <DropdownMenu>
                         <DropdownMenuTrigger>
                                 <Avatar>

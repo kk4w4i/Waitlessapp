@@ -3,10 +3,10 @@ from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
 from django.http import JsonResponse
-from django.views.decorators.csrf import ensure_csrf_cookie
+from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from django.views.decorators.http import require_POST
 from django.contrib.auth.decorators import login_required
-from rest_framework_simplejwt.tokens import RefreshToken
+from django.middleware.csrf import get_token
 from django.utils.log import logging
 logger = logging.getLogger(__name__)
 from django.db import transaction
@@ -15,53 +15,45 @@ from decimal import Decimal, ROUND_HALF_UP
 from .models import Store, StoreProfile, Product, Layout, Table
 from .serializers import StoreSerializer, StoreProfileSerializer, ProductSerializer
 
-@require_POST
+@csrf_exempt
 def signup_view(request):
     data = json.loads(request.body)
-    username = data.get("username")
+    username = data.get("email")
     password = data.get("password")
     email = data.get("email")
     first_name = data.get("firstName")
     last_name = data.get("lastName")
-    stores = []
 
     if username is None or password is None or email is None:
         return JsonResponse({"detail": "Please provide username, password, and email"}, status=400)
 
     try:
-        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name, stores=stores)
+        user = User.objects.create_user(username=username, email=email, password=password, first_name=first_name, last_name=last_name)
+        login(request, user)
+        csrf_token = get_token(request)
+        return JsonResponse({'csrftoken': csrf_token}, status=200)
     except Exception as e:
         return JsonResponse({"detail": str(e)}, status=400)
 
-    refresh = RefreshToken.for_user(user)
-    return JsonResponse({
-        "detail": "User created successfully",
-        "access_token": str(refresh.access_token),
-        "refresh_token": str(refresh)
-    })
-
-@require_POST
+@csrf_exempt
 def login_view(request):
     data = json.loads(request.body)
-    username = data.get("username")
+    username = data.get("name")
     password = data.get("password")
 
     if username is None or password is None:
         return JsonResponse({"detail": "Please provide username and password"}, status=400)
 
     user = authenticate(username=username, password=password)
-    if user is None:
-        return JsonResponse({"detail": "Invalid credentials"}, status=400)
-
-    login(request, user)
-
-    refresh = RefreshToken.for_user(user)
-    return JsonResponse({
-        "detail": "Successfully logged in!",
-        "access_token": str(refresh.access_token),
-        "refresh_token": str(refresh)
-    })
-
+    if user is not None:
+        login(request, user)
+        csrf_token = get_token(request)
+        print("logged in!")
+        return JsonResponse({'csrftoken': csrf_token, 'username': username}, status=200)
+    else:
+        return JsonResponse({'error': 'Login failed'}, status=400)
+    
+@ensure_csrf_cookie 
 def logout_view(request):
     if not request.user.is_authenticated:
         return JsonResponse({"detail": "You are not logged in"}, status=400)
@@ -76,6 +68,7 @@ def session_view(request):
 
     return JsonResponse({"isauthenticated": True})
 
+@ensure_csrf_cookie
 def whoami_view(request):
     if not request.user.is_authenticated:
         return JsonResponse({"isauthenticated": False})
@@ -210,17 +203,14 @@ def create_layout(request):
             store = Store.objects.get(id=store_id)
             store_name = store.name
             with transaction.atomic():
-                # Update or create the layout
                 layout, created = Layout.objects.update_or_create(
                     store_id=store_id,
                     defaults={'name': store_name}
                 )
                 
-                # Clear existing tables if layout already exists
                 if not created:
                     Table.objects.filter(layout=layout).delete()
 
-                # Create new tables
                 tables_data = data.get('tables')
                 for table_data in tables_data:
                     positionX = round_decimal(table_data['positionX'])
