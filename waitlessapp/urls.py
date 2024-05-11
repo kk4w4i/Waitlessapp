@@ -19,10 +19,17 @@ from django.shortcuts import render
 from django.urls import path, include
 from django.http import HttpResponse
 
-def index_view(request, store_url=None):
-    # You can add any logic here to fetch data related to store_url if necessary
-    if store_url:
-        context = {'store_url': store_url}
+
+def index_view(request, url_context=None):
+    store = request.GET.get('store')
+    table = request.GET.get('table')
+
+    if url_context:
+        context = {
+            'url_context': url_context,
+            'store': store,
+            'table': table
+        }
         return render(request, 'dist/index.html', context)
     else:
         return render(request, 'dist/index.html')
@@ -34,8 +41,10 @@ urlpatterns = [
     path('signin/', index_view, name='signin'),
     path('signup/', index_view, name='signup'),
     path('user/', index_view, name='user'),
-    path('menu/<str:store_url>/', index_view, name='menu_store'),
-    path('layout/<str:store_url>/', index_view, name='layout_store'),
+    path('menu/<str:url_context>/', index_view, name='menu_store'),
+    path('layout/<str:url_context>/', index_view, name='layout_store'),
+    path('serving/<str:url_context>/', index_view, name='serve_store'),
+    path('order/', index_view, name='order_store'),
     path('demo/menu/', index_view, name='index'),
     path('demo/layout/', index_view, name='index'),
     path('demo/serving/', index_view, name='index'),

@@ -50,9 +50,9 @@ function User () {
     useEffect(() => {
         const fetchUserProfiles = async () => {
             try {
-            const response = await fetch('/api/profiles/');
-            const data: StoreProfile[] = await response.json();
-            setStoreProfiles(data);
+                const response = await fetch('/api/profiles/');
+                const data: StoreProfile[] = await response.json();
+                setStoreProfiles(data);
             } catch (error) {
             console.error('Error fetching menu items:', error);
             }

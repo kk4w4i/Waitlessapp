@@ -11,9 +11,10 @@ from django.utils.log import logging
 logger = logging.getLogger(__name__)
 from django.db import transaction
 from decimal import Decimal, ROUND_HALF_UP
+from django.http import HttpResponse
 
-from .models import Store, StoreProfile, Product, Layout, Table
-from .serializers import StoreSerializer, StoreProfileSerializer, ProductSerializer
+from .models import Store, StoreProfile, Product, Layout, Table, Order, OrderItem
+from .serializers import StoreSerializer, StoreProfileSerializer, ProductSerializer, OrderSerializer
 
 @csrf_exempt
 def signup_view(request):
@@ -148,11 +149,20 @@ def create_store(request):
     except Exception as e:
         logger.error(f"Error creating store: {str(e)}")
         return JsonResponse({"detail": "Failed to create store"}, status=500)
-    
-def get_stores(request):
-    stores = Store.objects.all()
-    serializer = StoreSerializer(stores, many=True)
-    return JsonResponse(serializer.data, safe=False)
+
+@login_required  
+def get_store(request):
+    data = json.loads(request.body)
+    store_url = data.get("store")
+
+    store = Store.objects.get(url=store_url)
+
+    if store:
+        products = Product.objects.filter(store_id=store.id)
+        product_serializer = ProductSerializer(products, many=True)
+        return JsonResponse({"storeName": store.name, "products": product_serializer.data}, safe=False)
+    else:
+        return JsonResponse({"detail": "No store found"})
     
 @require_POST
 @login_required
@@ -186,6 +196,7 @@ def create_store_profile(request):
             logger.error(f"Error creating store profile: {str(e)}")
             return JsonResponse({"detail": "Failed to create store profile"}, status=500) 
             
+@login_required
 def get_store_profiles(request):
     store_profiles = StoreProfile.objects.filter(username=request.user.username)
     serializer = StoreProfileSerializer(store_profiles, many=True)
@@ -230,7 +241,8 @@ def create_layout(request):
                 return JsonResponse({"detail": "Layout successfully created or updated with tables"}, status=201)
         except Exception as e:
             return JsonResponse({"detail": str(e)}, status=500)
-        
+
+@login_required
 def get_seating_layout(request):
     data = json.loads(request.body)
     store_id = data.get('storeId')
@@ -249,9 +261,69 @@ def get_seating_layout(request):
         except Exception as e:
             logger.error(f"Error retrieving layout: {str(e)}")
             return JsonResponse({"detail": "Layout not found for the given store ID"}, status=404)
-        
+
+@login_required
+def create_order(request):
+    data = json.loads(request.body)
+    store_id = data.get('storeId')
+    order_time = data.get('orderTime')
+    table_number = data.get('tableNumber')
+    products = data.get('orderItems')
+    order_type = data.get('orderType')
+
+    if store_id:
+        try:
+            store = Store.objects.get(id=store_id)
+            with transaction.atomic():
+                order = Order.objects.create(
+                    store_id=store,
+                    order_time=order_time,
+                    table_number=table_number,
+                    product_count=len(products),
+                    order_type=order_type,
+                    defaults=
+                        {
+                            'status': 'Cooking',
+                            'completed_order_count': 0
+                        }
+                )
+
+            for order_item in products:
+                menu_id = order_item['menuId']
+                product = Product.objects.get(id=menu_id)
+                OrderItem.objects.create(
+                    count=order_item['count'],
+                    menu_name=product.name,
+                    menu_id=product,
+                    menu_image=product.image,
+                    order_id=order
+                )
+            
+            return JsonResponse({"detail": "Order Processed"}, status=200)
+        except Exception as e:
+            return JsonResponse({"detail": str(e)}, status=500)
+
+@login_required 
+def get_orders(request):
+    data = json.loads(request.body)
+    store_id = data.get('storeId')
+
+    if store_id:
+        store = Store.objects.get(id=store_id)
+        try:
+            orders = Order.objects.filter(store_id=store)
+            serializer = OrderSerializer(orders, many=True)
+            return JsonResponse(serializer.data, safe=False)
+        except Exception as e:
+            return JsonResponse({"detail": "Failed to retrieve orders"}, status=500)
+                
+
+
+#Helpers     
 def round_decimal(value):
     """Round the decimal to a maximum of 5 decimal places."""
     return Decimal(value).quantize(Decimal('.00001'), rounding=ROUND_HALF_UP)
+
+
 
     

@@ -4,6 +4,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import Draggable from 'react-draggable';
 import { ResizableBox } from 'react-resizable';
 import { useStore } from '@/hooks/useStore';
+import QRCode from 'qrcode';
+import CreatePDF from '@/utils/CreatePDF';
+
 import {
     PlusIcon,
     TransformIcon,
@@ -17,6 +20,12 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip"
 import Cookies from 'universal-cookie';
+
+import {
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+  } from "@/components/ui/dialog"
 
 interface DraggableComponentProps {
     id: number;
@@ -37,7 +46,7 @@ export type Table = {
     tableNumber: number
 }
 
-const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayIndex, onRemove, position, onStop, onResize, xLength, yLength }) => {
+const DraggableComponent: React.FC<DraggableComponentProps> = ({ displayIndex, onRemove, position, onStop, onResize, xLength, yLength }) => {
     const [width, setWidth] = useState(xLength);
     const [height, setHeight] = useState(yLength);
     const [isResizable, setIsResizable] = useState(false);
@@ -77,7 +86,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayInde
                 defaultPosition={position}
                 onStop={(_e, data) => {
                     if (onStop) {
-                    onStop(id, data.x, data.y);
+                    onStop(displayIndex, data.x, data.y);
                     }
                 }}
             >
@@ -89,7 +98,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayInde
                         setWidth(size.width);
                         setHeight(size.height);
                         if (onResize) {
-                          onResize(id, size.width, size.height);
+                          onResize(displayIndex, size.width, size.height);
                         }
                     }}
                     lockAspectRatio={false}
@@ -125,7 +134,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayInde
   function Layout() {
     const [components, setComponents] = useState<DraggableComponentProps[]>([]);
     const [tables, setTables] = useState<Table[]>([]);
-    const { storeId } = useStore()
+    const { storeId, storeUrl } = useStore()
     const cookies = new Cookies();
 
     useEffect(() => {
@@ -162,7 +171,30 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayInde
         fetchTables();
     }, [storeId]);
 
-    
+    const createQR = async (url: string, tableNumber: number): Promise<string> => {
+        const fullUrl = `${url}&table=${tableNumber}`;
+        try {
+          const qrCodeDataUri = await QRCode.toDataURL(fullUrl);
+          return qrCodeDataUri;
+        } catch (error) {
+          console.error('Error generating QR code:', error);
+          return '';
+        }
+      };
+
+    const [qrCodes, setQrCodes] = useState<string[]>([]);
+    const url = `http://127.0.0.1:8000/order/?store=${storeUrl}`;
+    const totalTables = tables.length;
+
+    const printQRs = async () => {
+        const codes = [];
+        for (let i = 1; i <= totalTables; i++) {
+            const code = await createQR(url, i);
+            codes.push(code);
+        }
+        setQrCodes(codes);
+    };
+      
 
     const handleDragStop = (id: number, x: number, y: number) => {
         setTables(tables.map(table => {
@@ -210,8 +242,6 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayInde
             },
         ]);
     };
-
-    console.log(components)
 
     const handleRemoveComponent = (removeId: number) => {
         const filteredComponents = components.filter((component) => component.displayIndex !== removeId);
@@ -265,13 +295,17 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ id, displayInde
                         <p className="text-neutral-500">Customise the layout of the store</p>
                     </div>
                     <div className='flex flex-row gap-2'>
-                        <Button variant="outline" className='rounded-md'>Print QR codes</Button>
+                    <Dialog>
+                        <DialogTrigger asChild>
+                            <Button variant="outline" className='rounded-md' onClick={() => printQRs()}>Print QR codes</Button>
+                        </DialogTrigger>
+                        <DialogContent className='w-[80%]'>
+                            {qrCodes.length > 0 && <CreatePDF qrCodes={qrCodes} />}
+                        </DialogContent>
+                    </Dialog>
                         <Button className='rounded-md' onClick={() => handleSubmit(storeId)}>Save</Button>
                     </div>
                 </div>
-
-               
-        
                 <Button onClick={() => handleAddComponent(40, 40, null, null, components.length)} className="fixed bottom-[5vh] left-1/2 -translate-x-1/2 size-[4rem] drop-shadow-lg z-[1]">
                 <PlusIcon />
                 </Button>

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Product, Store, StoreProfile, Layout, Table
+from .models import Product, Store, StoreProfile, Layout, Table, Order, OrderItem
 
 @admin.register(Store)
 class StoreAdmin(admin.ModelAdmin):
@@ -25,6 +25,15 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Table)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('store_id', 'table_number', 'layout', 'width')
+    list_display = ('id', 'store_id', 'table_number', 'layout', 'width')
     search_fields = ('table_number', 'layout')
 
+@admin.register(Order)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'store_id', 'status', 'order_time', 'table_number', 'order_type')
+    search_fields = ('status', 'table_number', 'order_time', 'order_type')
+
+@admin.register(OrderItem)
+class ProductAdmin(admin.ModelAdmin):
+    list_display = ('id', 'menu_name', 'menu_id', 'order_id')
+    search_fields = ('menu_name', 'menu_id', 'order_id')

@@ -67,3 +67,31 @@ class Table(models.Model):
     position_y = models.DecimalField(max_digits=10, decimal_places=5)
     width = models.DecimalField(max_digits=10, decimal_places=5)
     height = models.DecimalField(max_digits=10, decimal_places=5)
+
+class Order(models.Model):
+
+    STATUS_CHOICES = [
+        ('Cooking', 'Cooking'),
+        ('Ready to serve', 'Ready to serve'),
+    ]
+
+    ORDER_TYPE = [
+        ('Dine in', 'Dine in'),
+        ('Takeaway', 'Takeaway'),
+    ]
+
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
+    store_id = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='order_items')
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    order_time = models.TimeField()
+    table_number = models.IntegerField()
+    product_count = models.IntegerField()
+    completed_order_count = models.IntegerField()
+    order_type = models.CharField(max_length=10, choices=ORDER_TYPE)
+
+class OrderItem(models.Model):
+    count = models.IntegerField()
+    menu_name = models.CharField(max_length=100)
+    menu_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
+    menu_image = models.ImageField()
+    order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')

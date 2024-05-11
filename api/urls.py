@@ -11,9 +11,11 @@ urlpatterns = [
     path("create-product/", views.create_product, name="api_product"),
     path("products/", views.get_products, name="api_products"),
     path("create-store/", views.create_store, name="api_store"),
-    path("stores/", views.get_stores, name="api_stores"),
+    path("store/", views.get_store, name="api_stores"),
     path("create-store-profile/", views.create_store_profile, name="api_add_store_profile"),
     path("profiles/", views.get_store_profiles, name="api_store_profiles"),
     path('create-layout/', views.create_layout, name='api_create_layout'),
-    path('get-seating-layout/', views.get_seating_layout, name='get-seating-layout'),
+    path('get-seating-layout/', views.get_seating_layout, name='api_get_seating_layout'),
+    path('order', views.create_order, name="api_order"),
+    path('get-orders', views.create_order, name="api_get_orders")
 ]
