@@ -1,31 +1,25 @@
-import { FC, ReactElement } from 'react';
-import { Navigate, BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import './App.css'
-import { StoreProvider } from './context/StoreContext';
+
+import { FC, ReactElement } from 'react';
+import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+
 import { CookiesProvider } from 'react-cookie'
-import { useUser } from './hooks/useUser';
-
-// Page imports
-
-// Public Pages
 import Hero from './pages/Hero'
-import Navbar from './components/Navbar'
-import Signup from './pages/Signup'
-import Signin from './pages/Signin'
-
-// Protected Pages
-import Menu from './pages/Menu'
-import User from './pages/User'
-import Layout from './pages/Layout'
-import Order from './pages/Order'
-import Serving from './pages/Serving'
-
-// Demo Pages
-import MenuDemo from './pages/demos/MenuDemo'
-import LayoutDemo from './pages/demos/LayoutDemo'
-import ServingDemo from './pages/demos/ServingDemo'
 import KitchenDemo from './pages/demos/KitchenDemo'
+import Layout from './pages/Layout'
+import LayoutDemo from './pages/demos/LayoutDemo'
+import Menu from './pages/Menu/Menu'
+import MenuDemo from './pages/demos/MenuDemo'
+import Navbar from './components/Navbar'
+import Order from './pages/Order'
 import OrderDemo from './pages/demos/OrderDemo'
+import Serving from './pages/Serving'
+import ServingDemo from './pages/demos/ServingDemo'
+import Signin from './pages/Signin'
+import Signup from './pages/Signup'
+import { StoreProvider } from './context/StoreContext';
+import User from './pages/User'
+import { useUser } from './hooks/useUser';
 
 interface ProtectedRouteProps {
   element: ReactElement;

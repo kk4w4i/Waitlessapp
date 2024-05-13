@@ -12,15 +12,6 @@ import {
   useReactTable,
 } from "@tanstack/react-table"
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
   DropdownMenuContent,
@@ -28,15 +19,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { ImageIcon, TagIcon } from "@/assets/svgs/IconSVGs"
 import React , { useEffect, useState } from "react"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-} from "@/components/ui/select"
 import {
   Table,
   TableBody,
@@ -49,11 +32,11 @@ import {
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
 import Cookies from 'universal-cookie'
-import ImageUploader from "@/components/ImageUploader"
 import { Input } from "@/components/ui/input"
+import MenuItemForm from "./MenuItemForm"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import { Product } from "@/type"
-import ProductDrawer from "@/components/ProductDrawer"
+import ProductDrawer from "@/pages/Menu/ProductDrawer"
 import { useStore } from "@/hooks/useStore"
 
 function Menu() {
@@ -65,6 +48,7 @@ function Menu() {
   const { storeId } = useStore()
   const [menuItems, setMenuItems] = useState<Product[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [isEditingDialogOpen, setIsEditingDialogOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
 
   const handleDrawerOpen = (product: Product) => {
@@ -74,6 +58,15 @@ function Menu() {
 
   const handleDrawerClose = () => {
     setIsDrawerOpen(false);
+  };
+
+  const handleEditingOpen = (product: Product| null) => {
+    setSelectedProduct(product)
+    setIsEditingDialogOpen(true)
+  }
+
+  const handleEditingDialogClose = () => {
+    setIsEditingDialogOpen(false);
   };
 
   const columns: ColumnDef<Product>[] = [
@@ -180,6 +173,7 @@ function Menu() {
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem
+                onClick={() => handleEditingOpen(product)}
               >
                 Edit
               </DropdownMenuItem>
@@ -242,91 +236,6 @@ function Menu() {
     },
   })
 
-  const [product, setProduct] = useState<Product>({
-    id: '',
-    name: '',
-    price: '',
-    category: 'Sushi',
-    status: 'Draft',
-    image: '',
-    storeId: ''
-  })
-
-  const handleChangeForMenuItem = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = event.target;
-    setProduct((prevProduct) => ({
-      ...prevProduct,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (status: "Published" | "Draft", storeId: string | null) => {  
-    try {
-      const response = await fetch('/api/create-product/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': cookies.get('csrftoken'),
-        },
-        body: JSON.stringify({ ...product, status, storeId }),
-      });
-  
-      if (response.ok) {
-        console.log(`Product created with ${status} status`);
-        handleCloseClick()
-      } else {
-        console.error('Failed to create product');
-      }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
-
-  interface CustomButtonProps {
-    children?: React.ReactNode;
-    onClick?: () => void;
-  }
-  
-  function CustomButton({ children, onClick, ...rest }: CustomButtonProps) {
-    return (
-      <Button
-        className="flex gap-2 items-center p-0"
-        variant="ghost"
-        onClick={onClick}
-        {...rest}
-      >
-        {children}
-        <ImageIcon /> Photo
-      </Button>
-    );
-  }
-
-  const handleImageUpload = (base64: string) => {
-    setProduct((prevProduct) => ({
-        ...prevProduct,
-        ["image"]: base64,
-      }));
-}
-
-const handleCloseClick = () => {
-    setProduct({
-        id: '',
-        name: '',
-        price: '',
-        category: 'Sushi',
-        status: 'Draft',
-        image: '', 
-        storeId: ''
-    })
-}
-
-const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert" | "Main" | "Soup" | "Share") => {
-    setProduct((prevProduct) => ({
-        ...prevProduct,
-        ["category"]: value,
-      })); 
-}
-
   return (
     <div className="flex flex-col w-full px-[1rem] md:px-[2rem]">
         <div className="flex flex-col md:flex-row justify-between items:start md:items-end py-4">
@@ -345,94 +254,33 @@ const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert"
                 className="w-[20rem]"
                 />
                 <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                    <Button variant="outline" className="rounded-md hover:bg-accent hover:text-accent-foreground">
-                    Columns <ChevronDown className="ml-2 h-4 w-4" />
-                    </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                    {table
-                    .getAllColumns()
-                    .filter((column) => column.getCanHide())
-                    .map((column) => {
-                        return (
-                        <DropdownMenuCheckboxItem
-                            key={column.id}
-                            className="capitalize"
-                            checked={column.getIsVisible()}
-                            onCheckedChange={(value) =>
-                            column.toggleVisibility(!!value)
-                            }
-                        >
-                            {column.id}
-                        </DropdownMenuCheckboxItem>
-                        )
-                    })}
-                </DropdownMenuContent>
+                  <DropdownMenuTrigger asChild>
+                      <Button variant="outline" className="rounded-md hover:bg-accent hover:text-accent-foreground">
+                      Columns <ChevronDown className="ml-2 h-4 w-4" />
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                      {table
+                      .getAllColumns()
+                      .filter((column) => column.getCanHide())
+                      .map((column) => {
+                          return (
+                          <DropdownMenuCheckboxItem
+                              key={column.id}
+                              className="capitalize"
+                              checked={column.getIsVisible()}
+                              onCheckedChange={(value) =>
+                              column.toggleVisibility(!!value)
+                              }
+                          >
+                              {column.id}
+                          </DropdownMenuCheckboxItem>
+                          )
+                      })}
+                  </DropdownMenuContent>
                 </DropdownMenu>
-                <Dialog>
-                    <DialogTrigger asChild>
-                        <div>
-                            <Button className="md:flex hidden rounded-md gap-2">Create <PlusCircledIcon/></Button>
-                            <Button className="md:hidden block rounded-md gap-2"><PlusCircledIcon/></Button>
-                        </div>
-                    </DialogTrigger>
-                    <DialogContent onCloseClick={handleCloseClick}>
-                        <DialogHeader>
-                        <DialogTitle>Create Menu Item</DialogTitle>
-                        <DialogDescription>
-                            Add details of the menu item, these items will appear on order page if you select "Publish".
-                        </DialogDescription>
-                        </DialogHeader>
-                        <form className="flex flex-col gap-2" onSubmit={(event) => {event.preventDefault();}}>
-                            <label>Name</label>
-                            <Input
-                                name="name"
-                                value={product.name}
-                                onChange={handleChangeForMenuItem}
-                            />
-                            <label>Price</label>
-                            <Input
-                                name="price"
-                                value={product.price}
-                                onChange={handleChangeForMenuItem}
-                                /> 
-                            <div className="flex flex-row gap-4 items-center justify-start w-full">
-                                <ImageUploader 
-                                    onImageUpload={handleImageUpload}
-                                    label=""
-                                    buttonComponent={CustomButton}
-                                />
-                                <Select value={product.category} onValueChange={handleCategoryChange}>
-                                    <SelectTrigger>
-                                        <div className="flex gap-2 items-center">
-                                            <TagIcon/><SelectValue placeholder="Category"/>
-                                        </div>
-                                    </SelectTrigger>
-                                    <SelectContent>
-                                        <SelectItem value="Sushi">Sushi</SelectItem>
-                                        <SelectItem value="Main">Main</SelectItem>
-                                        <SelectItem value="Small Dish">Small Dish</SelectItem>
-                                        <SelectItem value="Dessert">Dessert</SelectItem>
-                                        <SelectItem value="Soup">Soup</SelectItem>
-                                        <SelectItem value="Share">Share</SelectItem>
-                                    </SelectContent>
-                                </Select>
-                            </div>
-                            
-                            <div className="flex gap-4 justify-end">
-                              <DialogClose>
-                                <Button className="rounded-md" variant="outline" type="submit" onClick={() => handleSubmit('Draft', storeId)}>
-                                  Draft
-                                </Button>
-                                <Button className="rounded-md" type="submit" onClick={() => handleSubmit('Published', storeId)}>
-                                  Publish
-                                </Button>
-                              </DialogClose>
-                            </div>
-                        </form>
-                    </DialogContent>
-                </Dialog>
+                <Button onClick={() => handleEditingOpen(null)} className="md:flex hidden rounded-md gap-2">Create <PlusCircledIcon/></Button>
+                <Button className="md:hidden block rounded-md gap-2"><PlusCircledIcon/></Button>
             </div>
         </div>
         <div className="rounded-md border">
@@ -486,6 +334,11 @@ const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert"
                   isOpen={isDrawerOpen}
                   product={selectedProduct}
                   onClose={handleDrawerClose}
+                />
+                <MenuItemForm 
+                  isOpen={isEditingDialogOpen}
+                  editingProduct={selectedProduct}
+                  onClose={handleEditingDialogClose}
                 />
             </TableBody>
             </Table>

@@ -4,9 +4,10 @@ import {
     DrawerFooter,
     DrawerHeader,
     DrawerTitle,
-  } from "@/components/ui/drawer"
-import { Button } from "./ui/button";
+} from "@/components/ui/drawer"
 import { MinusIcon, PlusIcon } from "@radix-ui/react-icons";
+
+import { Button } from "../../components/ui/button";
 import { Product } from "@/type";
 
 interface ProductDrawerProps {
@@ -20,7 +21,7 @@ const ProductDrawer: React.FC<ProductDrawerProps> = ({ isOpen, product, onClose 
   
     return (
         <Drawer open={isOpen} onClose={onClose}>
-            <DrawerContent className='relative flex flex-col justify-start items-start w-full md:w-[40%] md:mx-auto'>
+            <DrawerContent className='flex flex-col justify-start items-start w-full md:w-[40%] md:mx-auto'>
                 <DrawerHeader className='flex flex-col justify-start items-start'>
                     <div className="overflow-hidden border-hidden">
                         <div className='p-0'>

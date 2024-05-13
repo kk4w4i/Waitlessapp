@@ -92,18 +92,22 @@ def create_product(request):
             ).exists()
         
         if existing_store:
-            product = Product(
-                price=price,
-                category=category,
-                status=status,
+            created = Product.objects.update_or_create(
                 name=name,
-                image=image,
-                store_id=store_id
+                store_id=store_id,
+                defaults={
+                    'price': price,
+                    'category': category,
+                    'status': status,
+                    'image': image,
+                }
             )
-            product.save()
+            if created:
+                return JsonResponse({"detail": "Product created successfully"})
+            else:
+                return JsonResponse({"detail": "Product updated successfully"})
         else:
             return JsonResponse({"detail" : "This store does not exist"})
-        return JsonResponse({"detail": "Product created successfully"})
     except Exception as e:
         logger.error(f"Error creating product: {str(e)}")
         return JsonResponse({"detail": "Failed to create product"}, status=500)
