@@ -16,6 +16,6 @@ urlpatterns = [
     path("profiles/", views.get_store_profiles, name="api_store_profiles"),
     path('create-layout/', views.create_layout, name='api_create_layout'),
     path('get-seating-layout/', views.get_seating_layout, name='api_get_seating_layout'),
-    path('order', views.create_order, name="api_order"),
-    path('get-orders', views.create_order, name="api_get_orders")
+    path('order/', views.create_order, name="api_order"),
+    path('get-orders/', views.get_orders, name="api_get_orders")
 ]

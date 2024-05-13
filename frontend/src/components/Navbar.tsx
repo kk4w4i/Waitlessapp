@@ -217,8 +217,11 @@ function Navbar() {
                                     <AvatarFallback>CN</AvatarFallback>
                                 </Avatar> 
                         </DropdownMenuTrigger>
-                        <DropdownMenuContent align='end'>
-                            <Button onClick={() => handleLogout()}>
+                        <DropdownMenuContent align='end' className='bg-white flex flex-col'>
+                            <Button variant="ghost" className='rouded-none' onClick={() => navigate('/user/')}>
+                                My stores
+                            </Button>
+                            <Button variant="ghost"  className="rounded-none" onClick={() => handleLogout()}>
                                 Logout
                             </Button>
                         </DropdownMenuContent>

@@ -30,10 +30,10 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'store_id', 'status', 'order_time', 'table_number', 'order_type')
-    search_fields = ('status', 'table_number', 'order_time', 'order_type')
+    list_display = ('id', 'store_id', 'status', 'ordered_at', 'table_number', 'order_type', 'order_number')
+    search_fields = ('status', 'table_number', 'ordered_at', 'order_type')
 
 @admin.register(OrderItem)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'menu_name', 'menu_id', 'order_id')
+    list_display = ('id', 'menu_name', 'menu_id', 'order_id', 'count')
     search_fields = ('menu_name', 'menu_id', 'order_id')

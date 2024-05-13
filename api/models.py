@@ -1,6 +1,8 @@
 from django.db import models
 import uuid
 
+from django.utils import timezone
+
 class Store(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     address = models.CharField(max_length=100)
@@ -8,9 +10,6 @@ class Store(models.Model):
     name = models.CharField(max_length=100)
     url = models.CharField(max_length=100)
     key = models.UUIDField(default=uuid.uuid4)
-
-    def __str__(self):
-        return self.name
 
 class StoreProfile(models.Model):
     ROLE_CHOICES = [
@@ -81,13 +80,27 @@ class Order(models.Model):
     ]
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    store_id = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='order_items')
+    store_id = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
-    order_time = models.TimeField()
+    ordered_at = models.DateTimeField(auto_now_add=True)
     table_number = models.IntegerField()
     product_count = models.IntegerField()
+    order_number = models.IntegerField(default=1)
     completed_order_count = models.IntegerField()
     order_type = models.CharField(max_length=10, choices=ORDER_TYPE)
+
+    def save(self, *args, **kwargs):
+        if self._state.adding:
+            last_order = Order.objects.filter(store_id=self.store_id).order_by('-ordered_at').first()
+            if last_order:
+                # Check if the last order was created on a different day
+                if last_order.ordered_at.date() < timezone.now().date():
+                    self.order_number = 1
+                else:
+                    self.order_number = last_order.order_number + 1
+            else:
+                self.order_number = 1
+        super(Order, self).save(*args, **kwargs)
 
 class OrderItem(models.Model):
     count = models.IntegerField()

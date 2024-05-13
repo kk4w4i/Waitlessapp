@@ -1,7 +1,4 @@
-import * as React from "react"
-import { useState, useEffect } from "react"
-import { useStore } from "@/hooks/useStore"
-import Cookies from 'universal-cookie'
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -14,35 +11,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
- 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
-import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
-  } from "@/components/ui/select"
-  
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table"
 import {
     Dialog,
     DialogClose,
@@ -52,143 +20,42 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-
 import {
-    PlusCircledIcon
-} from "@radix-ui/react-icons"
+  DropdownMenu,
+  DropdownMenuCheckboxItem,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
 import { ImageIcon, TagIcon } from "@/assets/svgs/IconSVGs"
-import ImageUploader from "@/components/ImageUploader"
+import React , { useEffect, useState } from "react"
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table"
 
-export type Product = {
-  id: string
-  price: string
-  category: "Sushi" | "Main" | "Small Dish" | "Dessert" | "Main" | "Soup" | "Share"
-  status: "Published" | "Draft"
-  name: string
-  image: string
-  storeId: string
-}
- 
-export const columns: ColumnDef<Product>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "name",
-    header: ({ column }) => {
-      return (
-        <Button
-          variant="ghost"
-          onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-        >
-          Name
-          <ArrowUpDown className="ml-2 h-4 w-4" />
-        </Button>
-      )
-    },
-    cell: ({ row }) => <div className="w-[10rem] md:w-auto capitalize pl-4 text-left">{row.getValue("name")}</div>,
-  },
-  {
-    accessorKey: "category",
-    header: "Category",
-    cell: ({ row }) => {
-      return (
-        <div className="flex w-[6rem] md:w-auto">
-            <div className={`capitalize text-left rounded-full py-1 px-3 text-white bg-primary`}>
-                {row.getValue("category")}
-            </div>
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.getValue("status");
-      let textColor;
-  
-      if (status === "Published") {
-        textColor = "text-green-600"; 
-      } else if (status === "Draft") {
-        textColor = "text-red-500";
-      } else {
-        textColor = "text-gray-500"; 
-      }
-  
-      return (
-        <div className={`capitalize text-left ${textColor}`}>
-          {row.getValue("status")}
-        </div>
-      );
-    },
-  },
-  {
-    accessorKey: "price",
-    header: () => <div className="">Price</div>,
-    cell: ({ row }) => {
-      const amount = parseFloat(row.getValue("price"))
- 
-      // Format the amount as a dollar amount
-      const formatted = new Intl.NumberFormat("en-US", {
-        style: "currency",
-        currency: "USD",
-      }).format(amount)
- 
-      return <div className="text-left">{formatted}</div>
-    },
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      const payment = row.original
- 
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
- 
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import Cookies from 'universal-cookie'
+import ImageUploader from "@/components/ImageUploader"
+import { Input } from "@/components/ui/input"
+import { PlusCircledIcon } from "@radix-ui/react-icons"
+import { Product } from "@/type"
+import ProductDrawer from "@/components/ProductDrawer"
+import { useStore } from "@/hooks/useStore"
+
 function Menu() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const cookies = new Cookies();
@@ -196,8 +63,143 @@ function Menu() {
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
   const { storeId } = useStore()
-
   const [menuItems, setMenuItems] = useState<Product[]>([]);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+
+  const handleDrawerOpen = (product: Product) => {
+    setSelectedProduct(product);
+    setIsDrawerOpen(true);
+  };
+
+  const handleDrawerClose = () => {
+    setIsDrawerOpen(false);
+  };
+
+  const columns: ColumnDef<Product>[] = [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "name",
+      header: ({ column }) => {
+        return (
+          <Button
+            variant="ghost"
+            onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+          >
+            Name
+            <ArrowUpDown className="ml-2 h-4 w-4" />
+          </Button>
+        )
+      },
+      cell: ({ row }) => <div className="w-[10rem] md:w-auto capitalize pl-4 text-left">{row.getValue("name")}</div>,
+    },
+    {
+      accessorKey: "category",
+      header: "Category",
+      cell: ({ row }) => {
+        return (
+          <div className="flex w-[6rem] md:w-auto">
+              <div className={`capitalize text-left rounded-full py-1 px-3 text-white bg-primary`}>
+                  {row.getValue("category")}
+              </div>
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.getValue("status");
+        let textColor;
+    
+        if (status === "Published") {
+          textColor = "text-green-600"; 
+        } else if (status === "Draft") {
+          textColor = "text-red-500";
+        } else {
+          textColor = "text-gray-500"; 
+        }
+    
+        return (
+          <div className={`capitalize text-left ${textColor}`}>
+            {row.getValue("status")}
+          </div>
+        );
+      },
+    },
+    {
+      accessorKey: "price",
+      header: () => <div className="">Price</div>,
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("price"))
+   
+        // Format the amount as a dollar amount
+        const formatted = new Intl.NumberFormat("en-US", {
+          style: "currency",
+          currency: "USD",
+        }).format(amount)
+   
+        return <div className="text-left">{formatted}</div>
+      },
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        const product = row.original
+   
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0 rounded-md hover:bg-accent hover:text-accent-foreground">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal className="h-4 w-4" />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem
+              >
+                Edit
+              </DropdownMenuItem>
+              <DropdownMenuItem
+                onClick={() => navigator.clipboard.writeText(product.id)}
+              >
+                Copy product ID
+              </DropdownMenuItem>
+              <DropdownMenuSeparator />
+              <DropdownMenuItem
+                onClick={() => handleDrawerOpen(product)}
+              >
+                View Product
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
 
   useEffect(() => {
     const fetchMenuItems = async () => {
@@ -480,6 +482,11 @@ const handleCategoryChange = (value: "Sushi" | "Main" | "Small Dish" | "Dessert"
                     </TableCell>
                 </TableRow>
                 )}
+                <ProductDrawer
+                  isOpen={isDrawerOpen}
+                  product={selectedProduct}
+                  onClose={handleDrawerClose}
+                />
             </TableBody>
             </Table>
         </div>

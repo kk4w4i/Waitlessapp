@@ -45,7 +45,7 @@ import Cookies from "universal-cookie";
     const { storeId } = useStore()
     const cookies = new Cookies();
     const [tables, setTables] = useState<Table[]>([])
-    const [orders] = useState<Order[]>([])
+    const [orders, setOrders] = useState<Order[]>([])
 
     useEffect(() => {
         const fetchTables = async () => {
@@ -60,7 +60,7 @@ import Cookies from "universal-cookie";
                 });
                 if (response.ok) {
                     const data = await response.json();
-                    const transformedTables = data.tables.map((table: { table_number: any; position_x: string; position_y: string; width: string; height: string; }) => ({
+                    const transformedTables = data.tables.map((table: { table_number: number; position_x: string; position_y: string; width: string; height: string; }) => ({
                         id: table.table_number,
                         positionx: parseFloat(table.position_x),
                         positiony: parseFloat(table.position_y),
@@ -103,6 +103,49 @@ import Cookies from "universal-cookie";
             window.removeEventListener('resize', handleResize);
         };
     }, []);
+
+    useEffect(() => {
+        const fetchOrders = async () => {
+            try {
+                const response = await fetch(`/api/get-orders/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': cookies.get('csrftoken'),
+                    },
+                    body: JSON.stringify({ storeId }),
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    const transformedOrders = data.orders.map((order: { 
+                            order_number: string; 
+                            status: string; 
+                            ordered_at: string; 
+                            table_number: string; 
+                            product_count: string; 
+                            completed_order_count: string;
+                            order_type: string
+                        }) => (
+                            {
+                            id: order.order_number,
+                            status: order.status,
+                            orderTime: order.ordered_at,
+                            table: order.table_number,
+                            productCount: parseInt(order.product_count),
+                            completedOrderCount: parseInt(order.completed_order_count),
+                            orderType: order.order_type
+                            }));
+                    setOrders(transformedOrders); // Set the transformed tables to the state
+                } else {
+                    console.error('Failed to fetch store orders');
+                }
+            } catch (error) {
+                console.error('Error fetching orders:', error);
+            }
+        };
+    
+        fetchOrders();
+    }, [storeId]);
     
     return (
       <div className="grid grid-cols-1 md:grid-cols-3 py-4 px-[1rem] md:px-[2rem] md:gap-4">

@@ -14,7 +14,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from django.http import HttpResponse
 
 from .models import Store, StoreProfile, Product, Layout, Table, Order, OrderItem
-from .serializers import StoreSerializer, StoreProfileSerializer, ProductSerializer, OrderSerializer
+from .serializers import StoreProfileSerializer, ProductSerializer
 
 @csrf_exempt
 def signup_view(request):
@@ -265,41 +265,39 @@ def get_seating_layout(request):
 @login_required
 def create_order(request):
     data = json.loads(request.body)
-    store_id = data.get('storeId')
-    order_time = data.get('orderTime')
+    store_url = data.get('storeUrl')
     table_number = data.get('tableNumber')
     products = data.get('orderItems')
     order_type = data.get('orderType')
 
-    if store_id:
+    if store_url:
         try:
-            store = Store.objects.get(id=store_id)
+            store = Store.objects.get(url=store_url)
             with transaction.atomic():
-                order = Order.objects.create(
+                order = Order(
                     store_id=store,
-                    order_time=order_time,
-                    table_number=table_number,
+                    table_number=int(table_number),
                     product_count=len(products),
                     order_type=order_type,
-                    defaults=
-                        {
-                            'status': 'Cooking',
-                            'completed_order_count': 0
-                        }
+                    status = 'Cooking',
+                    completed_order_count = 0
                 )
+                
+                order.save()
 
-            for order_item in products:
-                menu_id = order_item['menuId']
-                product = Product.objects.get(id=menu_id)
-                OrderItem.objects.create(
-                    count=order_item['count'],
-                    menu_name=product.name,
-                    menu_id=product,
-                    menu_image=product.image,
-                    order_id=order
-                )
+                for order_item in products:
+                    menu_id = order_item['menuId']
+                    product = Product.objects.get(id=menu_id)
+                    print(menu_id, product)
+                    OrderItem.objects.create(
+                        count=order_item['count'],
+                        menu_name=product.name,
+                        menu_id=product,
+                        menu_image=product.image,
+                        order_id=order
+                    )
             
-            return JsonResponse({"detail": "Order Processed"}, status=200)
+                return JsonResponse({"detail": "Order Processed"}, status=200)
         except Exception as e:
             return JsonResponse({"detail": str(e)}, status=500)
 
@@ -311,10 +309,14 @@ def get_orders(request):
     if store_id:
         store = Store.objects.get(id=store_id)
         try:
-            orders = Order.objects.filter(store_id=store)
-            serializer = OrderSerializer(orders, many=True)
-            return JsonResponse(serializer.data, safe=False)
-        except Exception as e:
+            orders = Order.objects.filter(store_id=store).values(
+                'order_number', 'status', 'ordered_at', 'table_number', 'product_count', 'completed_order_count', 'order_type'
+            )
+
+            order_list = list(orders)
+            
+            return JsonResponse({"orders": order_list}, status=200)
+        except Exception:
             return JsonResponse({"detail": "Failed to retrieve orders"}, status=500)
                 
 

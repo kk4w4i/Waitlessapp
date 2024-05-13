@@ -25,14 +25,4 @@ class ProductSerializer(serializers.Serializer):
     image = serializers.CharField()
     store_id = serializers.CharField()
 
-class OrderSerializer(serializers.Serializer):
-    id = serializers.CharField()
-    store_id = serializers.CharField()
-    status = serializers.ChoiceField(choices=["Cooking", "Ready to serve"])
-    order_time = serializers.CharField()
-    table_number = serializers.CharField()
-    product_count = serializers.CharField()
-    completed_order_count = serializers.CharField()
-    order_type = serializers.ChoiceField(choices=["Dine in", "Takeaway"])
-
     
