@@ -1,14 +1,14 @@
-import { useState, useEffect } from 'react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import { useEffect, useState } from 'react'
+
+import { Button } from './ui/button'
 import Logo from '../assets/waitless-logo.webp'
 import pfp from '../assets/pfp-ph.webp'
+import { useCookies } from 'react-cookie'
 import { useLocation } from 'react-router-dom'
 import { useNavigate } from 'react-router-dom'
 import { useStore } from '@/hooks/useStore'
-import { useCookies } from 'react-cookie'
-
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { Button } from './ui/button'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { useUser } from '@/hooks/useUser'
 
 function Navbar() {
@@ -153,7 +153,7 @@ function Navbar() {
         appPages && (
             <div className='flex flex-row justify-between items-center pb-[1rem] md:pb-[2rem] md:pt-[1rem] border-b px-[1rem] md:px-[2rem] z-[50]'>
                 <img onClick={() => navigate('/')} className="h-[1.8rem]" src={Logo}></img>
-                <div className='absolute left-1/2 -translate-x-1/2 flex flex-row gap-4 md:block hidden'>
+                <div className='absolute left-1/2 -translate-x-1/2 flex-row gap-4 md:flex hidden'>
                     <Button 
                         className={checkMenu(location.pathname) ?  "font-bold" : "font-light"} 
                         variant="ghost"
@@ -183,7 +183,7 @@ function Navbar() {
                         Kitchen
                     </Button>
                 </div>
-                <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex flex-row gap-2 md:hidden block bg-white z-[50] p-2 drop-shadow-lg transition-opacity ease-in duration-600 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
+                <div className={`fixed bottom-10 left-1/2 -translate-x-1/2 flex flex-row gap-2 md:hidden bg-white z-[50] p-2 drop-shadow-lg transition-opacity ease-in duration-600 ${isVisible ? 'opacity-100' : 'opacity-0'}`}>
                     <Button 
                         className={`rounded-md ${checkMenu(location.pathname) ? "font-bold bg-primary" : "font-light text-primary bg-secondary"}`} 
                         onClick={() => navigate(menuUrl)}
