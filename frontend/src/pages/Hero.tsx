@@ -1,17 +1,16 @@
-import { Button } from '@/components/ui/button'
-import { useRef, useState } from 'react';
-import ReactPlayer from 'react-player';
-import { useInView } from 'react-intersection-observer';
-import { useCookies } from 'react-cookie';
-
-// assets
-import Logo from '../assets/waitless-logo.webp'
-import HeroPhoto from '../assets/stockphoto/herophoto.webp'
-import MenuVideo from '../assets/mp4/Menu.mp4'
-import pfp from '../assets/pfp-ph.webp'
-import { MenuTagSVG, KitchenTagSVG, LayoutTagSVG, ServingTagSVG } from '@/assets/svgs/HeroSVG'
-import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
+import { KitchenTagSVG, LayoutTagSVG, MenuTagSVG, ServingTagSVG } from '@/assets/svgs/HeroSVG'
+import { useRef, useState } from 'react';
+
+import { Button } from '@/components/ui/button'
+import HeroPhoto from '../assets/stockphoto/herophoto.webp'
+import Logo from '../assets/waitless-logo.webp'
+import MenuVideo from '../assets/mp4/Menu.mp4'
+import ReactPlayer from 'react-player';
+import pfp from '../assets/pfp-ph.webp'
+import { useCookies } from 'react-cookie';
+import { useInView } from 'react-intersection-observer';
 import { useUser } from '@/hooks/useUser';
 
 function Hero () {

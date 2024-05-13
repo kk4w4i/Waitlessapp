@@ -1,4 +1,6 @@
 import * as React from "react"
+
+import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -11,10 +13,6 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
- 
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
   DropdownMenu,
   DropdownMenuCheckboxItem,
@@ -24,7 +22,6 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
 import {
   Table,
   TableBody,
@@ -33,10 +30,14 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
+
+import { Button } from "@/components/ui/button"
+import { Checkbox } from "@/components/ui/checkbox"
+import { Input } from "@/components/ui/input"
 import {
     PlusCircledIcon
 } from "@radix-ui/react-icons"
- 
+
 const data: Product[] = [
     {
         id: "a76d9f8b-2f6d-4e3c-b7d8-8e7d9f6e5d1a",

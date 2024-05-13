@@ -3,9 +3,9 @@ import {
     CardContent,
     CardHeader,
     CardTitle,
-  } from "@/components/ui/card";
-  import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
-  
+} from "@/components/ui/card";
+import { ScrollArea, ScrollBar } from "@/components/ui/scroll-area"
+
 export type OrderItem = {
     id: string
     name: string

@@ -1,19 +1,20 @@
-import { Button } from "@/components/ui/button";
-import { differenceInMinutes } from 'date-fns';
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { ScrollArea } from "@/components/ui/scroll-area"
-import { Progress } from "@/components/ui/progress";
+import { useEffect, useRef, useState } from "react";
+
+import { Button } from "@/components/ui/button";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
-import { useEffect, useState, useRef } from "react";
-import { useStore } from "@/hooks/useStore";
 import Cookies from "universal-cookie";
-  
-  export type Order = {
+import { Progress } from "@/components/ui/progress";
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { differenceInMinutes } from 'date-fns';
+import { useStore } from "@/hooks/useStore";
+
+export type Order = {
     id: string
     status: "Cooking" | "Ready to serve"
     orderTime: string

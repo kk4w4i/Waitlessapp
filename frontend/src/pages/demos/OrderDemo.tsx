@@ -1,25 +1,7 @@
-import Logo from '../../assets/waitless-logo.webp'
-import FruitPoke from '../../assets/stockphoto/fruit-poke.jpg'
-import SalmonPoke from '../../assets/stockphoto/salmon-poke.jpg'
-import PrawnPoke from '../../assets/stockphoto/prawn-poke.jpg'
-import Salad from '../../assets/stockphoto/salad.jpg'
-import Dumpling from '../../assets/stockphoto/dumpling.jpg'
-import StrawberryDrink from '../../assets/stockphoto/strawberry-drink.jpg'
-import OrangeDrink from '../../assets/stockphoto/orange-drink.jpg'
-import WatermelonDrink from '../../assets/stockphoto/watermelon-drink.jpg'
-
-import { useState } from 'react'
-
 import {
-    Sheet,
-    SheetContent,
-    SheetDescription,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-  } from "@/components/ui/sheet"
-import { Button } from '@/components/ui/button'
-
+    Card,
+    CardContent,
+} from '@/components/ui/card'
 import {
     Drawer,
     DrawerContent,
@@ -29,16 +11,31 @@ import {
     DrawerTitle,
     DrawerTrigger,
 } from "@/components/ui/drawer"
-
 import {
+    MinusIcon,
     PersonIcon,
-    PlusIcon,
-    MinusIcon
+    PlusIcon
 } from '@radix-ui/react-icons'
-import { 
-    Card, 
-    CardContent,
-} from '@/components/ui/card'
+import {
+    Sheet,
+    SheetContent,
+    SheetDescription,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+
+import { Button } from '@/components/ui/button'
+import Dumpling from '../../assets/stockphoto/dumpling.jpg'
+import FruitPoke from '../../assets/stockphoto/fruit-poke.jpg'
+import Logo from '../../assets/waitless-logo.webp'
+import OrangeDrink from '../../assets/stockphoto/orange-drink.jpg'
+import PrawnPoke from '../../assets/stockphoto/prawn-poke.jpg'
+import Salad from '../../assets/stockphoto/salad.jpg'
+import SalmonPoke from '../../assets/stockphoto/salmon-poke.jpg'
+import StrawberryDrink from '../../assets/stockphoto/strawberry-drink.jpg'
+import WatermelonDrink from '../../assets/stockphoto/watermelon-drink.jpg'
+import { useState } from 'react'
 
 export type MenuItem = {
     id: string;

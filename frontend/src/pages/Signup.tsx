@@ -1,8 +1,3 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { Button } from "@/components/ui/button"
-import Logo from '../assets/waitless-logo.webp'
-
 import {
   Card,
   CardContent,
@@ -10,8 +5,13 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
+import { Link, useNavigate } from 'react-router-dom';
+
+import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import Logo from '../assets/waitless-logo.webp'
+import { useState } from 'react';
 import { useUser } from '@/hooks/useUser';
 
 function Signup () {

@@ -1,16 +1,7 @@
-import Logo from '@/assets/waitless-logo.webp'
-import { useEffect, useState } from 'react'
 import {
-    Sheet,
-    SheetClose,
-    SheetContent,
-    SheetDescription,
-    SheetFooter,
-    SheetHeader,
-    SheetTitle,
-    SheetTrigger,
-  } from "@/components/ui/sheet"
-import { Button } from '@/components/ui/button'
+    Card,
+    CardContent,
+} from '@/components/ui/card'
 import {
     Drawer,
     DrawerContent,
@@ -20,16 +11,26 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import {
+    MinusIcon,
     PersonIcon,
-    PlusIcon,
-    MinusIcon
+    PlusIcon
 } from '@radix-ui/react-icons'
-import { 
-    Card, 
-    CardContent,
-} from '@/components/ui/card'
-import { useSearchParams } from 'react-router-dom'
+import {
+    Sheet,
+    SheetClose,
+    SheetContent,
+    SheetDescription,
+    SheetFooter,
+    SheetHeader,
+    SheetTitle,
+    SheetTrigger,
+} from "@/components/ui/sheet"
+import { useEffect, useState } from 'react'
+
+import { Button } from '@/components/ui/button'
 import Cookies from 'universal-cookie'
+import Logo from '@/assets/waitless-logo.webp'
+import { useSearchParams } from 'react-router-dom'
 
 export type Product = {
     id: string

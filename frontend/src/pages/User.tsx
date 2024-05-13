@@ -1,7 +1,4 @@
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import { Button } from "@/components/ui/button"
-import { useStore } from "@/hooks/useStore"
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import {
     Dialog,
     DialogClose,
@@ -10,15 +7,19 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-  } from "@/components/ui/dialog"
-  import { Input } from "@/components/ui/input"
-import { PlusIcon } from "lucide-react"
+} from "@/components/ui/dialog"
 import { DropdownMenu, DropdownMenuContent, DropdownMenuTrigger } from '@radix-ui/react-dropdown-menu'
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useEffect, useState } from "react"
+
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import Logo from '../assets/waitless-logo.webp'
-import pfp from '../assets/pfp-ph.webp'
+import { PlusIcon } from "lucide-react"
 import { motion } from 'framer-motion'
+import pfp from '../assets/pfp-ph.webp'
 import { useCookies } from "react-cookie"
+import { useNavigate } from "react-router-dom"
+import { useStore } from "@/hooks/useStore"
 import { useUser } from "@/hooks/useUser"
 
 export type Store = {

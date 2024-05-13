@@ -1,31 +1,29 @@
-import { Button } from '@/components/ui/button';
-import { Link } from 'react-router-dom'
-import React, { useState, useEffect, useRef } from 'react';
-import Draggable from 'react-draggable';
-import { ResizableBox } from 'react-resizable';
-import { useStore } from '@/hooks/useStore';
-import QRCode from 'qrcode';
-import CreatePDF from '@/utils/CreatePDF';
-
+import {
+    Dialog,
+    DialogContent,
+    DialogTrigger,
+} from "@/components/ui/dialog"
 import {
     PlusIcon,
     TransformIcon,
     TrashIcon
 } from '@radix-ui/react-icons'
-
+import React, { useEffect, useRef, useState } from 'react';
 import {
     Tooltip,
     TooltipContent,
     TooltipProvider,
     TooltipTrigger,
 } from "@/components/ui/tooltip"
-import Cookies from 'universal-cookie';
 
-import {
-    Dialog,
-    DialogContent,
-    DialogTrigger,
-  } from "@/components/ui/dialog"
+import { Button } from '@/components/ui/button';
+import Cookies from 'universal-cookie';
+import CreatePDF from '@/utils/CreatePDF';
+import Draggable from 'react-draggable';
+import { Link } from 'react-router-dom'
+import QRCode from 'qrcode';
+import { ResizableBox } from 'react-resizable';
+import { useStore } from '@/hooks/useStore';
 
 interface DraggableComponentProps {
     id: number;
