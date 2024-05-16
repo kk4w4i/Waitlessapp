@@ -12,8 +12,7 @@ from django.utils.log import logging
 logger = logging.getLogger(__name__)
 from django.db import transaction
 from decimal import Decimal, ROUND_HALF_UP
-from django.http import HttpResponse
-
+from django.views.decorators.http import require_http_methods
 from .models import Store, StoreProfile, Product, Layout, Table, Order, OrderItem
 from .serializers import StoreProfileSerializer, ProductSerializer
 
@@ -113,13 +112,24 @@ def create_product(request):
         logger.error(f"Error creating product: {str(e)}")
         return JsonResponse({"detail": "Failed to create product"}, status=500)
 
-@require_POST 
-def get_products(request):
-    data = json.loads(request.body)
-    store_id = data.get('storeId')
+@require_http_methods(["GET"])
+def get_products(request, store_id):
     products = Product.objects.filter(store_id=store_id)
     serializer = ProductSerializer(products, many=True)
     return JsonResponse(serializer.data, safe=False)
+    
+
+@require_http_methods(["DELETE"])
+def delete_product(request, product_id):
+    try:
+        product = Product.objects.get(id=product_id)
+        product.delete()
+        return JsonResponse({"detail": "deleted product"})
+    except Product.DoesNotExist:
+        return JsonResponse({"detail": "Product not found"}, status=404)
+    except Exception as e:
+        return JsonResponse({"detail": "Internal Server Error"}, status=500)
+
 
 @require_POST
 @login_required
@@ -200,7 +210,8 @@ def create_store_profile(request):
         except Exception as e:
             logger.error(f"Error creating store profile: {str(e)}")
             return JsonResponse({"detail": "Failed to create store profile"}, status=500) 
-            
+
+@require_http_methods(["GET"])
 @login_required
 def get_store_profiles(request):
     store_profiles = StoreProfile.objects.filter(username=request.user.username)
@@ -247,11 +258,9 @@ def create_layout(request):
         except Exception as e:
             return JsonResponse({"detail": str(e)}, status=500)
 
+@require_http_methods(["GET"])
 @login_required
-def get_seating_layout(request):
-    data=json.loads(request.body)
-    store_id = data.get('storeId')
-    
+def get_seating_layout(request, store_id):    
     if store_id:
         try:
             layout = Layout.objects.get(store_id=store_id)
@@ -267,6 +276,7 @@ def get_seating_layout(request):
             logger.error(f"Error retrieving layout: {str(e)}")
             return JsonResponse({"detail": "Layout not found for the given store ID"}, status=404)
 
+@require_POST
 @login_required
 def create_order(request):
     data = json.loads(request.body)
@@ -312,15 +322,14 @@ def create_order(request):
         except Exception as e:
             return JsonResponse({"detail": str(e)}, status=500)
 
+@require_http_methods(["GET"])
 @login_required 
-def get_orders(request):
-    data=json.loads(request.body)
-    store_id = data.get('storeId')
+def get_orders(request, store_id):
 
     if store_id:
         store = Store.objects.get(id=store_id)
         try:
-            orders = Order.objects.filter(store_id=store).values(
+            orders = Order.objects.filter(store_id=store, completeStatus=False).values(
                 'id', 'order_number', 'status', 'ordered_at', 'table_number', 'product_count', 'completed_order_count', 'order_type', 'completeStatus'
             )
 
@@ -330,6 +339,7 @@ def get_orders(request):
         except Exception:
             return JsonResponse({"detail": "Failed to retrieve orders"}, status=500)
 
+@require_POST
 @login_required
 def complete_hall_status(request):
     try:
@@ -353,14 +363,11 @@ def complete_hall_status(request):
         return JsonResponse({"detail": "Invalid request body"}, status=400)
     except Exception as e:
         return JsonResponse({"detail": "Internal Server Error"}, status=500)
-    
-@login_required
-def get_order_items(request):
-    try:
-        data = json.loads(request.body)
-        store_id = data.get('storeId')
-        order_id = data.get('orderId')
 
+@require_http_methods(["GET"])
+@login_required
+def get_order_items(request, store_id, order_id):
+    try:
         if store_id:
             try:
                 order = Order.objects.get(id=order_id)
@@ -376,7 +383,57 @@ def get_order_items(request):
             except Exception:
                return JsonResponse({"detail": "Error retrieving order items"}, status=500) 
     except Exception as e:
-        logging.error(f"Unexpected error: {str(e)}")
+        return JsonResponse({"detail": "Internal Server Error"}, status=500)
+
+@require_http_methods(["GET"])
+@login_required
+def get_kitchen_orders(request, store_id):
+    try: 
+        if store_id:
+            store = Store.objects.get(id=store_id)
+        try:
+            orders = Order.objects.filter(store_id=store, completeStatus=False, status="Cooking").values(
+                'id', 'order_number', 'status', 'table_number', 'completed_order_count', 'order_type'
+            )
+
+            order_list = list(orders)
+
+            for i, order in enumerate(order_list):
+                order_items = OrderItem.objects.filter(order_id=order['id']).values(
+                    'id', 'menu_name', 'count', 'complete_status'
+                )
+                order_list[i]['order_items'] = list(order_items)
+            
+            return JsonResponse({"orders": order_list}, status=200)
+        except Exception:
+            return JsonResponse({"detail": "Failed to retrieve orders"}, status=500)
+    
+    except Exception as e:
+        return JsonResponse({"detail": "Internal Server Error"}, status=500)
+
+@require_POST
+@login_required
+def update_order_status(request):
+    try:
+        data = json.loads(request.body)
+        store_id = data.get('storeId')
+        order_id = data.get('orderId')
+
+        if store_id:
+            try:
+                order = Order.objects.get(id=order_id)
+                order.status = "Ready to serve"
+                order.save()
+                return JsonResponse({"detail": "Order successfully updated to Ready to serve"})
+            except Order.DoesNotExist:
+                return JsonResponse({"detail": "Order not found"}, status=404)
+            except Exception as e:
+                return JsonResponse({"detail": "Error editing order"}, status=500)
+        else:
+            return JsonResponse({"detail": "storeId is required"}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid request body"}, status=400)
+    except Exception as e:
         return JsonResponse({"detail": "Internal Server Error"}, status=500)
 
 

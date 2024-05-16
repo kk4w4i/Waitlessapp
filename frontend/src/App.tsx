@@ -5,6 +5,7 @@ import { Navigate, Route, BrowserRouter as Router, Routes } from 'react-router-d
 
 import { CookiesProvider } from 'react-cookie'
 import Hero from './pages/Hero'
+import Kitchen from './pages/Kitchen/Kitchen';
 import KitchenDemo from './pages/demos/KitchenDemo'
 import Layout from './pages/Layout'
 import LayoutDemo from './pages/demos/LayoutDemo'
@@ -44,6 +45,7 @@ function App() {
               <Route path="/menu/:store-url" element={<ProtectedRoute element={<Menu />} />} />
               <Route path="/layout/:store-url" element={<ProtectedRoute element={<Layout />} />} />
               <Route path="/serving/:store-url" element={<ProtectedRoute element={<Serving />} />} />
+              <Route path="/kitchen/:store-url" element={<ProtectedRoute element={<Kitchen />} />} />
               <Route path="/order" element={<Order />} />
               <Route path="/demo/menu" element={<MenuDemo />} />
               <Route path="/demo/layout" element={<LayoutDemo />} />

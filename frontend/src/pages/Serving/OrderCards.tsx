@@ -16,7 +16,6 @@ import { Order, OrderItem } from '../../type'
 import { Button } from "../../components/ui/button";
 import { ChevronRightIcon } from "@radix-ui/react-icons";
 import Cookies from 'universal-cookie';
-import { Progress } from "../../components/ui/progress";
 import { differenceInMinutes } from 'date-fns';
 import { useState } from 'react';
 import { useStore } from "@/hooks/useStore"
@@ -54,13 +53,12 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
 
     const fetchOrderItems = async (orderId: string) => {
         try {
-            const response = await fetch('/api/get-order-items/', {
-                method: 'POST',
+            const response = await fetch(`/api/get-order-items/${storeId}/${orderId}/`, {
+                method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
                     'X-CSRFToken': cookies.get('csrftoken'),
-                },
-                body: JSON.stringify({ orderId, storeId }),
+                }
             })
             if (response.ok) {
                 const data = await response.json()
@@ -133,7 +131,6 @@ const OrderCard: React.FC<OrderCardProps> = ({order}) => {
                 </Button>
             </div>
             <div className="flex flex-row gap-4 items-center justify-between">
-                <Progress className="h-[0.6rem] w-[70%]" value={100 * (order.completedOrderCount / order.productCount)} />
                 <p className="text-neutral-500 text-[0.8rem]">{formatOrderTime(order.orderTime)}</p>
             </div>
             </CardContent>

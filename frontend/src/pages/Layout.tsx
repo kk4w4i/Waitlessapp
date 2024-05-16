@@ -139,13 +139,12 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ displayIndex, o
     useEffect(() => {
         const fetchTables = async () => {
             try {
-                const response = await fetch(`/api/get-seating-layout/`, {
-                    method: 'POST',
+                const response = await fetch(`/api/get-seating-layout/${storeId}/`, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': cookies.get('csrftoken'),
                     },
-                    body: JSON.stringify({ storeId }),
                 });
                 if (response.ok) {
                     const data = await response.json();

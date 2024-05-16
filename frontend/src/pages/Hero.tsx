@@ -49,9 +49,9 @@ function Hero () {
         triggerOnce: true,
     });
 
-    const ctaMessage = userId ? "Start" : "Let's have a look"
+    const ctaMessage = userId ? "Start" : "Get Started"
 
-    const ctaUrl = userId ? "/user" : "/demo/menu"
+    const ctaUrl = userId ? "/user" : "/signin"
 
     if (inView && !isVideoVisible) {
         setIsVideoVisible(true);
@@ -107,7 +107,7 @@ function Hero () {
                     </div>
                     <div className='flex flex-col gap-6 items-center'>
                         <p className='text-[0.7rem] md:text-[1rem] text-center w-[85%] md:w-[60%]'>
-                            For restaurants and cafes that are looking to streamline their POS system to be faster and more accurate.
+                            For restaurants and cafes that are looking to streamline their POS system whilst keeping things simple.
                         </p>
                         <Button className='text-[1rem] px-7 py-6' onClick={() => window.location.href = `${ctaUrl}`}>{ctaMessage}</Button>
                     </div>

@@ -71,6 +71,25 @@ function Menu() {
     setIsEditingDialogOpen(false);
   };
 
+  const deleteItem = async (productId: string) => {
+    try {
+        const response = await fetch(`/api/delete-product/${productId}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': cookies.get('csrftoken'),
+            },
+        });
+        if (response.ok) {
+            console.log(`Deleted product ${productId}`);
+            window.location.reload();
+        } else {
+            console.error("Unable to delete Item");
+        }
+    } catch (error) {
+        console.error("Error deleting product", error);
+    }
+};
+
   const columns: ColumnDef<Product>[] = [
     {
       id: "select",
@@ -190,6 +209,11 @@ function Menu() {
               >
                 View Product
               </DropdownMenuItem>
+              <DropdownMenuItem className="text-red-500 hover:text-red-500"
+                onClick={() => deleteItem(product.id)}
+              >
+                Delete
+              </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         )
@@ -199,25 +223,24 @@ function Menu() {
 
   useEffect(() => {
     const fetchMenuItems = async () => {
-      const response = await fetch('/api/products/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': cookies.get('csrftoken'),
-        },
-        body: JSON.stringify({ storeId }),
-      });
+        const response = await fetch(`/api/products/${storeId}/`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': cookies.get('csrftoken'),
+            },
+        });
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch products');
-      }
+        if (!response.ok) {
+            throw new Error('Failed to fetch products');
+        }
 
-      const data: Product[] = await response.json();
-      setMenuItems(data);
+        const data: Product[] = await response.json();
+        setMenuItems(data);
     };
 
     fetchMenuItems();
-  }, []);
+}, []);
  
   const table = useReactTable({
     data: menuItems,

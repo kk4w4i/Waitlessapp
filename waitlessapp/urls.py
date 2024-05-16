@@ -44,6 +44,7 @@ urlpatterns = [
     path('menu/<str:url_context>/', index_view, name='menu_store'),
     path('layout/<str:url_context>/', index_view, name='layout_store'),
     path('serving/<str:url_context>/', index_view, name='serve_store'),
+    path('kitchen/<str:url_context>/', index_view, name='kitchen_store'),
     path('order/', index_view, name='order_store'),
     path('demo/menu/', index_view, name='index'),
     path('demo/layout/', index_view, name='index'),

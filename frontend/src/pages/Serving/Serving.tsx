@@ -15,13 +15,12 @@ function Serving() {
     useEffect(() => {
         const fetchTables = async () => {
             try {
-                const response = await fetch(`/api/get-seating-layout/`, {
-                    method: 'POST',
+                const response = await fetch(`/api/get-seating-layout/${storeId}/`, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': cookies.get('csrftoken'),
-                    },
-                    body: JSON.stringify({ storeId }),
+                    }                
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -72,13 +71,12 @@ function Serving() {
     useEffect(() => {
         const fetchOrders = async () => {
             try {
-                const response = await fetch(`/api/get-orders/`, {
-                    method: 'POST',
+                const response = await fetch(`/api/get-orders/${storeId}/`, {
+                    method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
                         'X-CSRFToken': cookies.get('csrftoken'),
-                    },
-                    body: JSON.stringify({ storeId }),
+                    }                
                 });
                 if (response.ok) {
                     const data = await response.json();
@@ -118,8 +116,6 @@ function Serving() {
 
         fetchOrders();
     }, [storeId]);
-
-    console.log(orders)
     
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 py-4 px-[1rem] md:px-[2rem] md:gap-4">

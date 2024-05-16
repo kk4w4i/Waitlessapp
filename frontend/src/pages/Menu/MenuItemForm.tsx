@@ -71,6 +71,7 @@ const MenuItemForm: React.FC<MenuItemProps> = ({editingProduct, isOpen, onClose}
           if (response.ok) {
             console.log(`Product created with ${status} status`);
             handleCloseClick()
+            window.location.reload()
           } else {
             console.error('Failed to create product');
           }
