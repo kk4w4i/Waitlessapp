@@ -1,4 +1,4 @@
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ArrowUpDown, ChevronDown, EyeIcon, MoreHorizontal } from "lucide-react"
 import {
   ColumnDef,
   ColumnFiltersState,
@@ -37,6 +37,7 @@ import MenuItemForm from "./MenuItemForm"
 import { PlusCircledIcon } from "@radix-ui/react-icons"
 import { Product } from "@/type"
 import ProductDrawer from "@/pages/Menu/ProductDrawer"
+import { useNavigate } from "react-router-dom"
 import { useStore } from "@/hooks/useStore"
 
 function Menu() {
@@ -45,11 +46,12 @@ function Menu() {
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
   const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  const { storeId } = useStore()
+  const { storeId, storeUrl } = useStore()
   const [menuItems, setMenuItems] = useState<Product[]>([]);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [isEditingDialogOpen, setIsEditingDialogOpen] = useState(false)
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
+  const navigate = useNavigate()
 
   const handleDrawerOpen = (product: Product) => {
     setSelectedProduct(product);
@@ -242,7 +244,6 @@ function Menu() {
             <div className="flex flex-col items-start">
                 <span className="flex flex-row items-center gap-2 text-[3rem] font-bold">Store Menu</span>
                 <p className="text-neutral-500">Create, edit or delete your items here</p>
-                <p className="text-neutral-500"></p>
             </div>
             <div className="flex items-center gap-1 md:gap-4 mt-2 md:mt-0">
                 <Input
@@ -279,8 +280,9 @@ function Menu() {
                       })}
                   </DropdownMenuContent>
                 </DropdownMenu>
+                <Button variant="secondary" className="md:flex hidden rounded-md gap-2" onClick={() => navigate(`/order/?store=${storeUrl}&table=1`)}>Preview <EyeIcon size={15}/></Button>
                 <Button onClick={() => handleEditingOpen(null)} className="md:flex hidden rounded-md gap-2">Create <PlusCircledIcon/></Button>
-                <Button className="md:hidden block rounded-md gap-2"><PlusCircledIcon/></Button>
+                <Button onClick={() => handleEditingOpen(null)} className="md:hidden block rounded-md gap-2"><PlusCircledIcon/></Button>
             </div>
         </div>
         <div className="rounded-md border">
@@ -348,7 +350,8 @@ function Menu() {
                 {table.getFilteredSelectedRowModel().rows.length} of{" "}
                 {table.getFilteredRowModel().rows.length} row(s) selected.
             </div>
-            <div className="space-x-2">
+            <div className="flex flex-row space-x-2">
+                <Button variant="secondary" className="md:hidden block rounded-md gap-2" onClick={() => navigate(`/order/?store=${storeUrl}&table=1`)}><EyeIcon size={15}/></Button>
                 <Button
                     variant="outline"
                     size="sm"

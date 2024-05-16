@@ -30,7 +30,7 @@ class ProductAdmin(admin.ModelAdmin):
 
 @admin.register(Order)
 class ProductAdmin(admin.ModelAdmin):
-    list_display = ('id', 'store_id', 'status', 'ordered_at', 'table_number', 'order_type', 'order_number')
+    list_display = ('id', 'store_id', 'status', 'ordered_at', 'table_number', 'order_type', 'order_number', 'completeStatus')
     search_fields = ('status', 'table_number', 'ordered_at', 'order_type')
 
 @admin.register(OrderItem)

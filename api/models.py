@@ -82,6 +82,7 @@ class Order(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     store_id = models.ForeignKey(Store, on_delete=models.CASCADE, related_name='orders')
     status = models.CharField(max_length=20, choices=STATUS_CHOICES)
+    completeStatus = models.BooleanField(default=False)
     ordered_at = models.DateTimeField(auto_now_add=True)
     table_number = models.IntegerField()
     product_count = models.IntegerField()
@@ -107,4 +108,5 @@ class OrderItem(models.Model):
     menu_name = models.CharField(max_length=100)
     menu_id = models.ForeignKey(Product, on_delete=models.CASCADE, related_name='order_items')
     menu_image = models.ImageField()
+    complete_status = models.BooleanField(default=False)
     order_id = models.ForeignKey(Order, on_delete=models.CASCADE, related_name='order_items')

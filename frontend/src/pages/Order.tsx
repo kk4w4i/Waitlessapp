@@ -4,6 +4,7 @@ import {
 } from '@/components/ui/card'
 import {
     Drawer,
+    DrawerClose,
     DrawerContent,
     DrawerFooter,
     DrawerHeader,
@@ -122,7 +123,9 @@ export const MenuItemCard = ({ menuItem, orderItems, setOrderItems }: { menuItem
                     <div className='flex flex-row items-center gap-4 border rounded-md'>
                         <Button className='rounded-md' onClick={incrementDown}><MinusIcon/></Button><p className='flex justify-center w-[1rem]'>{count}</p><Button className="rounded-md" onClick={incrementUp}><PlusIcon/></Button>
                     </div>
-                    <Button onClick={() => addMenuItem(menuItem)}className="rounded-md">Add to order</Button>
+                    <DrawerClose>
+                        <Button onClick={() => addMenuItem(menuItem)}className="rounded-md">Add to order</Button>
+                    </DrawerClose>
                 </DrawerFooter>
             </DrawerContent>
         </Drawer>
@@ -203,8 +206,17 @@ function Order() {
                 <div className='flex gap-2 md:gap-4'>
                 <Sheet>
                     <SheetTrigger asChild>
-                        <Button variant="outline" className='flex flex-row items-center gap-2 rounded-md'>
-                            <PersonIcon /> Table {table}
+                        <Button variant="outline" className='flex flex-row items-center gap-2 rounded-md relative overflow-visible'>
+                            <PersonIcon /> 
+                                Table {table} 
+                                {orderItems.length > 0 && 
+                                    <span className='absolute top-[-5px] right-[-5px]'>
+                                        <span className="relative flex size-[10px]">
+                                            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neutral-800 opacity-75"></span>
+                                            <span className="relative inline-flex rounded-full size-[10px] bg-neutral-900"></span>
+                                        </span>
+                                    </span>
+                                }
                         </Button>
                     </SheetTrigger>
                     <SheetContent className='flex flex-col justify-between'>

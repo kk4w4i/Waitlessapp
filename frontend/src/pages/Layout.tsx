@@ -23,6 +23,7 @@ import Draggable from 'react-draggable';
 import { Link } from 'react-router-dom'
 import QRCode from 'qrcode';
 import { ResizableBox } from 'react-resizable';
+import { toast } from "sonner"
 import { useStore } from '@/hooks/useStore';
 
 interface DraggableComponentProps {
@@ -276,6 +277,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ displayIndex, o
       
           if (response.ok) {
             console.log(`Layout created`);
+            toast("Layout successfully changed")
           } else {
             console.error('Failed to create layout');
           }
@@ -286,7 +288,7 @@ const DraggableComponent: React.FC<DraggableComponentProps> = ({ displayIndex, o
 
     return (
         <div>
-            <div className="inset-0 h-[90vh] w-full bg-white bg-[radial-gradient(#D0D0D0_1px,transparent_1px)] [background-size:20px_20px] z-[0] relative hidden md:block">
+            <div className="inset-0 h-[89vh] w-full bg-white bg-[radial-gradient(#D0D0D0_1px,transparent_1px)] [background-size:20px_20px] z-[0] relative hidden md:block">
                 <div className="relative flex flex-row justify-between items-center px-[2rem] py-4 w-full z-[2]">
                     <div>
                         <span className="flex flex-row items-center gap-2 text-[3rem] font-bold">Store Layout</span>

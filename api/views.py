@@ -1,4 +1,5 @@
 import json
+from collections import Counter
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.models import User
@@ -248,7 +249,7 @@ def create_layout(request):
 
 @login_required
 def get_seating_layout(request):
-    data = json.loads(request.body)
+    data=json.loads(request.body)
     store_id = data.get('storeId')
     
     if store_id:
@@ -274,6 +275,12 @@ def create_order(request):
     products = data.get('orderItems')
     order_type = data.get('orderType')
 
+    product_count = 0
+    for item in products:
+        product_count += item['count']
+    
+    print(product_count)
+
     if store_url:
         try:
             store = Store.objects.get(url=store_url)
@@ -281,7 +288,7 @@ def create_order(request):
                 order = Order(
                     store_id=store,
                     table_number=int(table_number),
-                    product_count=len(products),
+                    product_count=product_count,
                     order_type=order_type,
                     status = 'Cooking',
                     completed_order_count = 0
@@ -307,14 +314,14 @@ def create_order(request):
 
 @login_required 
 def get_orders(request):
-    data = json.loads(request.body)
+    data=json.loads(request.body)
     store_id = data.get('storeId')
 
     if store_id:
         store = Store.objects.get(id=store_id)
         try:
             orders = Order.objects.filter(store_id=store).values(
-                'order_number', 'status', 'ordered_at', 'table_number', 'product_count', 'completed_order_count', 'order_type'
+                'id', 'order_number', 'status', 'ordered_at', 'table_number', 'product_count', 'completed_order_count', 'order_type', 'completeStatus'
             )
 
             order_list = list(orders)
@@ -322,7 +329,55 @@ def get_orders(request):
             return JsonResponse({"orders": order_list}, status=200)
         except Exception:
             return JsonResponse({"detail": "Failed to retrieve orders"}, status=500)
+
+@login_required
+def complete_hall_status(request):
+    try:
+        data = json.loads(request.body)
+        store_id = data.get('storeId')
+        order_id = data.get('orderId')
+
+        if store_id:
+            try:
+                order = Order.objects.get(id=order_id)
+                order.completeStatus = True
+                order.save()
+                return JsonResponse({"detail": "Order successfully updated to Complete"})
+            except Order.DoesNotExist:
+                return JsonResponse({"detail": "Order not found"}, status=404)
+            except Exception as e:
+                return JsonResponse({"detail": "Error editing order"}, status=500)
+        else:
+            return JsonResponse({"detail": "storeId is required"}, status=400)
+    except json.JSONDecodeError:
+        return JsonResponse({"detail": "Invalid request body"}, status=400)
+    except Exception as e:
+        return JsonResponse({"detail": "Internal Server Error"}, status=500)
+    
+@login_required
+def get_order_items(request):
+    try:
+        data = json.loads(request.body)
+        store_id = data.get('storeId')
+        order_id = data.get('orderId')
+
+        if store_id:
+            try:
+                order = Order.objects.get(id=order_id)
+                order_items = OrderItem.objects.filter(order_id=order).values(
+                    'id', 'count', 'menu_name', 'menu_id', 'menu_image', 'complete_status'
+                )
                 
+                order_items_list = list(order_items)
+
+                return JsonResponse({"order_items": order_items_list}, status=200)
+            except Order.DoesNotExist:
+                return JsonResponse({"detail": "Order not found"}, status=404)
+            except Exception:
+               return JsonResponse({"detail": "Error retrieving order items"}, status=500) 
+    except Exception as e:
+        logging.error(f"Unexpected error: {str(e)}")
+        return JsonResponse({"detail": "Internal Server Error"}, status=500)
 
 
 #Helpers     
